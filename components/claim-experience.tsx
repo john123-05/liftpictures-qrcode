@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { GalleryPhoto } from "@/types/photo";
 
 type ClaimExperienceProps = {
@@ -28,6 +28,7 @@ function isValidEmail(value: string) {
 
 export function ClaimExperience({ photo }: ClaimExperienceProps) {
   const [showForm, setShowForm] = useState(false);
+  const [isClientReady, setIsClientReady] = useState(false);
   const [formState, setFormState] = useState<FormState>({
     fullName: "",
     email: "",
@@ -38,9 +39,11 @@ export function ClaimExperience({ photo }: ClaimExperienceProps) {
 
   const priceLabel = useMemo(() => formatPrice(photo), [photo]);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  useEffect(() => {
+    setIsClientReady(true);
+  }, []);
 
+  const submitCheckout = async () => {
     const nextErrors: Partial<Record<keyof FormState, string>> = {};
 
     if (!formState.fullName.trim()) {
@@ -76,13 +79,16 @@ export function ClaimExperience({ photo }: ClaimExperienceProps) {
         }),
       });
 
-      const payload = (await response.json()) as { error?: string; url?: string };
+      const contentType = response.headers.get("content-type") ?? "";
+      const payload = contentType.includes("application/json")
+        ? ((await response.json()) as { error?: string; url?: string })
+        : null;
 
-      if (!response.ok || !payload.url) {
-        throw new Error(payload.error || "Checkout konnte nicht gestartet werden.");
+      if (!response.ok || !payload?.url) {
+        throw new Error(payload?.error || "Checkout konnte nicht gestartet werden.");
       }
 
-      window.location.href = payload.url;
+      window.location.assign(payload.url);
     } catch (error) {
       setSubmitError(
         error instanceof Error ? error.message : "Checkout konnte nicht gestartet werden.",
@@ -151,7 +157,7 @@ export function ClaimExperience({ photo }: ClaimExperienceProps) {
           ) : null}
 
           {showForm ? (
-            <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+            <div className="mt-6 space-y-4">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-ink" htmlFor="fullName">
                   Name
@@ -166,6 +172,12 @@ export function ClaimExperience({ photo }: ClaimExperienceProps) {
                       fullName: event.target.value,
                     }))
                   }
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      void submitCheckout();
+                    }
+                  }}
                   className="w-full border border-line bg-white px-4 py-3 text-base text-ink outline-none transition focus:border-ink"
                   placeholder="Vorname Nachname"
                 />
@@ -188,6 +200,12 @@ export function ClaimExperience({ photo }: ClaimExperienceProps) {
                       email: event.target.value,
                     }))
                   }
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      void submitCheckout();
+                    }
+                  }}
                   className="w-full border border-line bg-white px-4 py-3 text-base text-ink outline-none transition focus:border-ink"
                   placeholder="dein.name@email.com"
                 />
@@ -195,22 +213,29 @@ export function ClaimExperience({ photo }: ClaimExperienceProps) {
               </div>
 
               <button
-                type="submit"
-                disabled={isSubmitting}
+                type="button"
+                disabled={isSubmitting || !isClientReady}
+                onClick={() => {
+                  void submitCheckout();
+                }}
                 className={`inline-flex w-full items-center justify-center px-5 py-4 text-sm font-semibold ${
-                  isSubmitting
+                  isSubmitting || !isClientReady
                     ? "bg-ink/60 text-white"
                     : "bg-ink text-white transition hover:bg-ink/90"
                 }`}
               >
-                {isSubmitting ? "Checkout wird vorbereitet..." : "Weiter zum Checkout"}
+                {!isClientReady
+                  ? "Checkout wird geladen..."
+                  : isSubmitting
+                    ? "Checkout wird vorbereitet..."
+                    : "Weiter zum Checkout"}
               </button>
 
               <p className="text-xs leading-6 text-ink-soft">
                 Der Checkout laeuft additiv ueber eine eigene Claim-Strecke und veraendert keine
                 bestehende Stripe- oder Supabase-Logik der anderen Projekte.
               </p>
-            </form>
+            </div>
           ) : null}
 
           {submitError ? (
