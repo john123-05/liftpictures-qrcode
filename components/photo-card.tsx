@@ -27,14 +27,26 @@ export function PhotoCard({ photo, eager = false }: PhotoCardProps) {
           fetchPriority={eager ? "high" : "auto"}
           className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-[1.015]"
         />
-        <div className="pointer-events-none absolute left-3 top-3 sm:left-4 sm:top-4">
-          <div className="relative h-12 w-12 overflow-hidden border border-white/70 bg-white/28 shadow-[0_14px_28px_-24px_rgba(15,23,42,0.4)] backdrop-blur-[2px] sm:h-14 sm:w-14">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(128deg,rgba(255,255,255,0.08)_0%,transparent_36%,rgba(255,255,255,0.14)_52%,transparent_72%,rgba(255,255,255,0.08)_100%)]" />
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="relative h-[72%] w-[72%] max-h-[15rem] max-w-[15rem] rotate-[-16deg] sm:max-h-[18rem] sm:max-w-[18rem] xl:max-h-[20rem] xl:max-w-[20rem]">
+            <Image
+              src={liftpicturesLogo}
+              alt="LiftPictures Logo"
+              fill
+              sizes="320px"
+              className="object-contain opacity-28 mix-blend-multiply saturate-0 contrast-125"
+            />
+          </div>
+        </div>
+        <div className="pointer-events-none absolute bottom-3 right-3 sm:bottom-4 sm:right-4">
+          <div className="relative h-12 w-12 overflow-hidden border border-white/70 bg-white/36 shadow-[0_14px_28px_-24px_rgba(15,23,42,0.4)] backdrop-blur-[2px] sm:h-14 sm:w-14">
             <Image
               src={liftpicturesLogo}
               alt="LiftPictures Logo"
               fill
               sizes="56px"
-              className="object-cover opacity-72 mix-blend-multiply"
+              className="object-cover opacity-78 mix-blend-multiply saturate-0"
             />
           </div>
         </div>
