@@ -1,4 +1,5 @@
 import "server-only";
+import { getTodayRangeForTimeZone } from "@/lib/date-range";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { resolvePhotoImageUrl } from "@/lib/images";
 import { resolvePhotoClaimCode } from "@/lib/qr";
@@ -23,6 +24,7 @@ export async function getLatestGalleryPhotos(
   config: GalleryConfig,
 ): Promise<GalleryPhotoResult> {
   const supabase = getSupabaseServerClient();
+  const todayRange = config.onlyToday ? getTodayRangeForTimeZone(config.timeZone) : null;
 
   let query = supabase
     .from("photos")
@@ -32,6 +34,14 @@ export async function getLatestGalleryPhotos(
 
   if (config.parkId) {
     query = query.eq("park_id", config.parkId);
+  }
+
+  if (config.storageBucket) {
+    query = query.eq("storage_bucket", config.storageBucket);
+  }
+
+  if (todayRange) {
+    query = query.gte("created_at", todayRange.startIso).lt("created_at", todayRange.endIso);
   }
 
   const { data, error } = await query;

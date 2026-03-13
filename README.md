@@ -38,6 +38,9 @@ STRIPE_WEBHOOK_SECRET=whsec_xxx
 ALLOW_MOCK_CHECKOUT=false
 NEXT_PUBLIC_GALLERY_LIMIT=180
 NEXT_PUBLIC_GALLERY_PARK_ID=
+NEXT_PUBLIC_GALLERY_BUCKET=test
+NEXT_PUBLIC_GALLERY_ONLY_TODAY=true
+GALLERY_TIMEZONE=Europe/Berlin
 ```
 
 4. SQL-Migration in Supabase ausfuehren
@@ -88,6 +91,7 @@ Dann wird nach Name/E-Mail keine Stripe-Seite geoeffnet, sondern eine eigene Dem
 ## Technische Hinweise
 
 - Galeriebilder werden aus `photos` geladen und nach `created_at DESC` sortiert
+- Standardmaessig werden nur heutige Eintraege aus `storage_bucket = test` gezeigt
 - Claim-Code-Lookup prueft `external_code`, dann `claim_code`, danach `photo.id`
 - Bild-URLs werden robust aufgeloest:
   - zuerst `image_url`
