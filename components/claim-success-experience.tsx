@@ -33,6 +33,9 @@ function buildOrderUrl(props: ClaimSuccessExperienceProps) {
 export function ClaimSuccessExperience(props: ClaimSuccessExperienceProps) {
   const [state, setState] = useState<LoadState>({ kind: "loading" });
   const [shareMessage, setShareMessage] = useState<string | null>(null);
+  const [downloadMessage, setDownloadMessage] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
 
   const order = state.kind === "ready" ? state.payload : null;
   const isPaid = order?.status === "paid";
@@ -108,13 +111,105 @@ export function ClaimSuccessExperience(props: ClaimSuccessExperienceProps) {
     );
   }
 
-  const handleShare = async () => {
-    if (!shareUrl) {
+  async function loadDownloadAsset() {
+    if (!order?.downloadHref) {
+      throw new Error("Das Bild steht noch nicht zum Download bereit.");
+    }
+
+    const response = await fetch(order.downloadHref, {
+      cache: "no-store",
+    });
+
+    let serverError: string | null = null;
+
+    if (!response.ok) {
+      const contentType = response.headers.get("content-type") ?? "";
+
+      if (contentType.includes("application/json")) {
+        const payload = (await response.json()) as { error?: string };
+        serverError = payload.error ?? null;
+      }
+
+      throw new Error(serverError || "Das Bild konnte nicht geladen werden.");
+    }
+
+    const blob = await response.blob();
+    const contentType = response.headers.get("content-type") ?? blob.type ?? "image/jpeg";
+    const disposition = response.headers.get("content-disposition") ?? "";
+    const fileNameMatch =
+      disposition.match(/filename\*=UTF-8''([^;]+)/i) ??
+      disposition.match(/filename=\"?([^\";]+)\"?/i);
+    const fileName = fileNameMatch?.[1]
+      ? decodeURIComponent(fileNameMatch[1])
+      : `${order.photo.resolvedClaimCode}.jpg`;
+
+    const file = new File([blob], fileName, {
+      type: contentType,
+    });
+
+    return {
+      blob,
+      file,
+      fileName,
+    };
+  }
+
+  const handleDownload = async () => {
+    if (!isPaid) {
       return;
     }
 
     try {
-      if (navigator.share) {
+      setIsDownloading(true);
+      setDownloadMessage(null);
+
+      const { blob, fileName } = await loadDownloadAsset();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = objectUrl;
+      link.download = fileName;
+      link.rel = "noopener";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(objectUrl);
+      }, 1500);
+
+      setDownloadMessage("Download gestartet.");
+    } catch (error) {
+      setDownloadMessage(
+        error instanceof Error ? error.message : "Download konnte nicht gestartet werden.",
+      );
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!isPaid) {
+      return;
+    }
+
+    try {
+      setIsSharing(true);
+      setShareMessage(null);
+
+      const { file } = await loadDownloadAsset();
+
+      if (navigator.share && "canShare" in navigator && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: "Meine Erinnerung",
+          text: buildShareText(),
+          files: [file],
+        });
+        setShareMessage(null);
+        return;
+      }
+
+      if (navigator.share && shareUrl) {
         await navigator.share({
           title: "Meine Erinnerung",
           text: buildShareText(),
@@ -124,10 +219,19 @@ export function ClaimSuccessExperience(props: ClaimSuccessExperienceProps) {
         return;
       }
 
-      await navigator.clipboard.writeText(shareUrl);
-      setShareMessage("Link kopiert.");
-    } catch {
-      setShareMessage("Teilen wurde abgebrochen.");
+      if (shareUrl) {
+        await navigator.clipboard.writeText(shareUrl);
+        setShareMessage("Link kopiert.");
+        return;
+      }
+
+      setShareMessage("Teilen ist auf diesem Geraet gerade nicht verfuegbar.");
+    } catch (error) {
+      setShareMessage(
+        error instanceof Error ? error.message : "Teilen wurde abgebrochen.",
+      );
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -177,31 +281,36 @@ export function ClaimSuccessExperience(props: ClaimSuccessExperienceProps) {
           </p>
 
           <div className="mt-6 grid gap-3">
-            <a
-              href={isPaid ? order?.downloadHref ?? "#" : "#"}
+            <button
+              type="button"
+              onClick={() => {
+                void handleDownload();
+              }}
+              disabled={!isPaid || isDownloading}
               className={`inline-flex w-full items-center justify-center px-5 py-4 text-sm font-semibold ${
-                isPaid
+                isPaid && !isDownloading
                   ? "bg-ink text-white transition hover:bg-ink/90"
                   : "pointer-events-none border border-line bg-page text-ink-soft"
               }`}
             >
-              Bild herunterladen
-            </a>
+              {isDownloading ? "Download wird vorbereitet..." : "Bild herunterladen"}
+            </button>
 
             <button
               type="button"
               onClick={handleShare}
-              disabled={!isPaid}
+              disabled={!isPaid || isSharing}
               className={`inline-flex w-full items-center justify-center border px-5 py-4 text-sm font-semibold ${
-                isPaid
+                isPaid && !isSharing
                   ? "border-line bg-white text-ink transition hover:border-ink"
                   : "pointer-events-none border-line bg-page text-ink-soft"
               }`}
             >
-              Bild teilen
+              {isSharing ? "Teilen wird vorbereitet..." : "Bild teilen"}
             </button>
           </div>
 
+          {downloadMessage ? <p className="mt-4 text-sm text-ink-soft">{downloadMessage}</p> : null}
           {shareMessage ? <p className="mt-4 text-sm text-ink-soft">{shareMessage}</p> : null}
         </section>
       </div>
