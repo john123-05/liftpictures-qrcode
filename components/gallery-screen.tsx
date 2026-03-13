@@ -1,3 +1,7 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
 import { ScrollingPhotoRow } from "@/components/scrolling-photo-row";
 import type { GalleryPhoto } from "@/types/photo";
 
@@ -23,6 +27,7 @@ export function GalleryScreen({
   skippedCount = 0,
   error,
 }: GalleryScreenProps) {
+  const [showIntroModal, setShowIntroModal] = useState(true);
   const hasPhotos = photos.length > 0;
   const topRowPhotos = photos.filter((_, index) => index % 2 === 0);
   const bottomRowPhotos = photos.filter((_, index) => index % 2 === 1);
@@ -67,6 +72,46 @@ export function GalleryScreen({
           )}
         </section>
       </div>
+
+      {showIntroModal ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111111]/55 px-4 py-6 backdrop-blur-sm">
+          <div className="w-full max-w-xl border border-line bg-white p-6 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.45)] sm:p-8">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-accent">Demo Hinweis</p>
+            <h2 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-ink sm:text-3xl">
+              Scanne mit QR-Code, wie der Parkbesucher.
+            </h2>
+            <div className="mt-5 space-y-3 text-sm leading-7 text-ink-soft sm:text-base">
+              <p>
+                Fuer den Zahlungstest nutze bitte die Demo-Karte
+                <span className="font-semibold text-ink"> 4242 4242 4242 4242</span>.
+              </p>
+              <p>
+                Ablaufdatum:
+                <span className="font-semibold text-ink"> 12/27</span>
+                {" "}CVC:
+                <span className="font-semibold text-ink"> 123</span>
+                {" "}Name beliebig.
+              </p>
+            </div>
+
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => setShowIntroModal(false)}
+                className="inline-flex w-full items-center justify-center bg-ink px-5 py-4 text-sm font-semibold text-white transition hover:bg-ink/90"
+              >
+                Weiter
+              </button>
+              <Link
+                href="/"
+                className="inline-flex w-full items-center justify-center border border-line bg-white px-5 py-4 text-sm font-semibold text-ink transition hover:border-ink"
+              >
+                Zurueck zur Hauptseite
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

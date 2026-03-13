@@ -64,15 +64,24 @@ h3,
   position: relative;
   overflow-x: clip;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 248, 246, 0.92) 100%),
-    radial-gradient(circle at top left, rgba(240, 137, 54, 0.08), transparent 28%);
+    linear-gradient(180deg, #ffffff 0%, #f5f5f7 54%, #ffffff 100%),
+    radial-gradient(circle at top center, rgba(240, 137, 54, 0.08), transparent 34%);
 }
 
+.landing-shell,
 .landing-shell h1,
 .landing-shell h2,
 .landing-shell h3,
 .landing-shell .font-display {
-  font-family: "Avenir Next", "Helvetica Neue", "Segoe UI", sans-serif;
+  font-family:
+    "SF Pro Display",
+    "SF Pro Text",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Helvetica Neue",
+    sans-serif;
 }
 
 .landing-shell::before {
@@ -80,10 +89,17 @@ h3,
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
-  background-size: 96px 96px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.28), transparent 16%, transparent 84%, rgba(0, 0, 0, 0.18));
+    linear-gradient(rgba(15, 23, 42, 0.024) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.024) 1px, transparent 1px);
+  background-size: 112px 112px;
+  mask-image:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.2),
+      transparent 14%,
+      transparent 84%,
+      rgba(0, 0, 0, 0.1)
+    );
   pointer-events: none;
 }
 
@@ -100,13 +116,140 @@ h3,
   transform: translate3d(0, 0, 0);
 }
 
-.landing-orb {
-  animation: landing-float 16s ease-in-out infinite;
+.hero-easy,
+.hero-terminal,
+.landing-terminal-code {
+  opacity: 0;
+}
+
+.hero-easy {
+  display: block;
+  transform: translate3d(0, -72px, 0) rotate(-7deg) scale(0.97);
+  transform-origin: center top;
+}
+
+.hero-terminal {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  max-width: 100%;
+  transform: translate3d(0, 12px, 0);
+  filter: blur(10px);
+  clip-path: inset(0 100% 0 0);
+}
+
+.hero-terminal::after {
+  content: "";
+  position: absolute;
+  inset: -0.08em -0.04em;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 28%,
+    rgba(255, 255, 255, 0.72) 48%,
+    rgba(255, 255, 255, 0) 72%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.landing-terminal-code {
+  transform: translate3d(0, 10px, 0);
+}
+
+.landing-intro-ready .hero-easy {
+  animation: landing-easy-drop 1.08s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.landing-intro-ready .hero-terminal {
+  animation: landing-terminal-boot 0.92s steps(14, end) 0.4s forwards;
+}
+
+.landing-intro-ready .hero-terminal::after {
+  animation: landing-terminal-scan 1.02s ease 0.45s both;
+}
+
+.landing-intro-ready .landing-terminal-code {
+  animation: landing-code-fade 0.72s ease 0.96s forwards;
+}
+
+.landing-device-float {
+  animation: landing-float 18s ease-in-out infinite;
 }
 
 .gallery-track {
   will-change: transform;
   animation: gallery-scroll var(--scroll-duration, 360s) linear infinite;
+}
+
+@keyframes landing-easy-drop {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -78px, 0) rotate(-8deg) scale(0.97);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translate3d(0, 10px, 0) rotate(1.2deg) scale(1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes landing-terminal-boot {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+    filter: blur(12px);
+    clip-path: inset(0 100% 0 0);
+  }
+
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes landing-terminal-scan {
+  0% {
+    opacity: 0;
+    transform: translate3d(-28%, 0, 0);
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(132%, 0, 0);
+  }
+}
+
+@keyframes landing-code-fade {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+    letter-spacing: 0.38em;
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    letter-spacing: 0.42em;
+  }
 }
 
 @keyframes landing-float {
@@ -131,6 +274,23 @@ h3,
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .landing-reveal,
+  .hero-easy,
+  .hero-terminal,
+  .landing-terminal-code {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    clip-path: none;
+    transition: none;
+    animation: none;
+  }
+
+  .hero-terminal::after,
+  .landing-device-float {
+    animation: none;
+  }
+
   .gallery-track {
     animation: none;
   }

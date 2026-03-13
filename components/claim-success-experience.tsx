@@ -166,19 +166,26 @@ export function ClaimSuccessExperience(props: ClaimSuccessExperienceProps) {
       const { blob, fileName } = await loadDownloadAsset();
       const objectUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
+      const supportsDownloadAttribute = typeof link.download === "string";
 
       link.href = objectUrl;
       link.download = fileName;
       link.rel = "noopener";
+      link.target = supportsDownloadAttribute ? "_self" : "_blank";
       document.body.appendChild(link);
       link.click();
       link.remove();
 
+      if (!supportsDownloadAttribute) {
+        window.open(objectUrl, "_blank", "noopener,noreferrer");
+        setDownloadMessage("Bild im neuen Tab geoeffnet.");
+      } else {
+        setDownloadMessage("Download gestartet.");
+      }
+
       setTimeout(() => {
         URL.revokeObjectURL(objectUrl);
       }, 1500);
-
-      setDownloadMessage("Download gestartet.");
     } catch (error) {
       setDownloadMessage(
         error instanceof Error ? error.message : "Download konnte nicht gestartet werden.",
@@ -219,7 +226,7 @@ export function ClaimSuccessExperience(props: ClaimSuccessExperienceProps) {
         return;
       }
 
-      if (shareUrl) {
+      if (shareUrl && navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(shareUrl);
         setShareMessage("Link kopiert.");
         return;

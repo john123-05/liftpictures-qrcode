@@ -1,130 +1,151 @@
 "use client";
 
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
+import dashboardShot from "@/assets/Bildschirmfoto 2026-03-13 um 16.24.46.png";
 import liftpicturesLogo from "@/assets/Liftpicutures Logo alt.jpg";
+import visitorsScanning from "@/assets/bild.png";
+import terminalDevice from "@/assets/bild12.png";
+import parkTerminals from "@/assets/bilder.png";
 
-const benefits = [
+const metrics = [
   {
-    title: "Mehr Sichtbarkeit im Park",
-    body: "EasyTerminal verkauft nicht nur an einem Ort. Mehrere Screens entlang von Laufwegen, am Ausgang oder im Shop schaffen mehr Beruehrungspunkte und mehr Kaufchancen.",
+    value: "Smartphone-first",
+    label: "Kauf direkt auf dem eigenen Gerät statt am klassischen Automaten.",
   },
   {
-    title: "Weniger Platz, mehr Wirkung",
-    body: "Statt eines grossen Automaten setzt EasyTerminal auf eine schlanke, moderne Hardware, die sich dezent in bestehende Flachen einfuegt.",
+    value: "Mehr Touchpoints",
+    label: "Mehrere Screens im Park schaffen mehr Sichtbarkeit und mehr Verkäufe.",
   },
   {
-    title: "Smartphone-first Checkout",
-    body: "Gaeste kaufen auf dem eigenen Handy. Kein Anstehen, kein Bedienlernen, kein Bargeld, keine zusaetzliche Reibung.",
-  },
-  {
-    title: "Einfach installiert",
-    body: "Die Hardware ist reduziert gedacht. Das senkt den Aufwand in Betrieb, Aufstellung und Erweiterung.",
-  },
-  {
-    title: "Skalierbar im ganzen Park",
-    body: "Ein weiterer Screen ist kein Sonderfall, sondern ein Hebel fuer mehr Umsatz an genau den Stellen, an denen Aufmerksamkeit entsteht.",
-  },
-  {
-    title: "Mehr Transparenz im Dashboard",
-    body: "Verkaeufe, Platzierungen und Performance werden messbar. Betreiber sehen, was funktioniert und wo weiteres Potenzial liegt.",
+    value: "Dashboard",
+    label: "Umsatz, Käufe und Performance bleiben für Betreiber jederzeit transparent.",
   },
 ] as const;
 
 const steps = [
   {
     number: "01",
-    title: "Bild sehen",
-    body: "Die Bilder laufen direkt auf dem Screen durch und erzeugen Aufmerksamkeit genau im richtigen Moment.",
+    title: "Bild auf dem Screen sehen",
+    body: "Die Aufnahmen laufen groß und aufmerksamkeitsstark über das Display und holen den Gast genau im richtigen Moment ab.",
   },
   {
     number: "02",
     title: "QR-Code scannen",
-    body: "Der Gast scannt den Code in Sekunden mit dem Smartphone. Kein Umweg, kein zusaetzliches Geraet.",
+    body: "Der Kauf startet ohne App und ohne Umweg direkt mit der Kamera des Smartphones.",
   },
   {
     number: "03",
     title: "Am Handy kaufen",
-    body: "Der Kauf findet auf dem eigenen Smartphone statt. Das fuehlt sich vertraut an und senkt Abbrueche.",
+    body: "Checkout und Bezahlung finden auf dem vertrauten Gerät des Gastes statt. Das reduziert Reibung und Abbrüche.",
   },
   {
     number: "04",
     title: "Erinnerung sichern und teilen",
-    body: "Das Bild ist direkt verfuegbar und kann sofort heruntergeladen oder mit Freunden geteilt werden.",
+    body: "Das Bild ist sofort verfügbar, kann heruntergeladen und direkt mit Freunden geteilt werden.",
+  },
+] as const;
+
+const benefits = [
+  {
+    title: "Weniger Automat. Mehr Fläche für den Park.",
+    body: "EasyTerminal ersetzt klobige Verkaufslogik durch eine schlanke, moderne Präsenz. Das spart Platz und wirkt deutlich hochwertiger.",
+  },
+  {
+    title: "Mehr Berührungspunkte im Alltag des Gastes.",
+    body: "Ein klassischer Automat verkauft an einem Ort. EasyTerminal kann entlang von Laufwegen, am Ausgang, im Shop oder in der Gastronomie präsent sein.",
+  },
+  {
+    title: "Kaufen dort, wo der Gast ohnehin schon ist.",
+    body: "Portemonnaie oder Bargeld hat nicht jeder griffbereit. Das Smartphone praktisch immer. Genau dort sollte auch der Kauf stattfinden.",
+  },
+  {
+    title: "Einfacher installieren und leichter erweitern.",
+    body: "Die reduzierte Hardware macht Rollout und Erweiterung deutlich flexibler als klassische Verkaufsautomaten.",
+  },
+  {
+    title: "Schnellerer Kaufprozess mit weniger Hürden.",
+    body: "Kein Anstehen, kein Münzeinwurf, keine Bedienlogik am Gerät. Stattdessen scannen, kaufen, sichern.",
+  },
+  {
+    title: "Transparenz statt Blackbox.",
+    body: "Ein modernes Dashboard zeigt, wo Verkäufe entstehen, welche Standorte performen und wie sich Umsätze entwickeln.",
   },
 ] as const;
 
 const comparisonRows = [
-  ["Platzbedarf", "Gross, dominant, stationaer", "Schlank, dezent, flexibel platzierbar"],
-  ["Kaufprozess", "Bedienlogik am Automaten", "Kauf direkt auf dem Smartphone"],
-  ["Bargeld / Muenzeneinwurf", "Oft notwendig oder erwartet", "Nicht erforderlich"],
-  ["Skalierbarkeit", "Ein Standort, hoher Aufwand", "Mehrere Screens im ganzen Park moeglich"],
-  ["Wartungsaufwand", "Hoeher durch klassische Hardware", "Reduzierte, moderne Hardware"],
-  ["Kaufgeschwindigkeit", "Mehr Schritte, mehr Reibung", "Scannen, kaufen, sichern"],
-  ["Teilen / Social Sharing", "Umstaendlich", "Direkt vom eigenen Geraet"],
-  ["Modernitaet", "Klassischer Automatenprozess", "Smartphone-first und zukunftsfaehig"],
+  {
+    topic: "Platzbedarf",
+    classic: "Großes Gerät, dominant im Raum, schwer elegant zu integrieren.",
+    terminal: "Schlankes Terminal, dezent und flexibel im Park platzierbar.",
+  },
+  {
+    topic: "Kaufprozess",
+    classic: "Bedienung am Automaten mit mehr Reibung.",
+    terminal: "QR-Code scannen und auf dem eigenen Smartphone kaufen.",
+  },
+  {
+    topic: "Bargeld",
+    classic: "Oft Teil des Denkmodells oder tatsächliche Hürde.",
+    terminal: "Kein Bargeld, kein Münzeinwurf, kein zusätzlicher Umweg.",
+  },
+  {
+    topic: "Skalierbarkeit",
+    classic: "Ein Standort, hoher Aufwand bei Erweiterungen.",
+    terminal: "Mehrere Screens an mehreren Stellen im Park möglich.",
+  },
+  {
+    topic: "Wartung",
+    classic: "Mehr klassische Hardware, mehr Aufwand im Betrieb.",
+    terminal: "Reduzierte, moderne Hardware mit schlankerem Setup.",
+  },
+  {
+    topic: "Social Sharing",
+    classic: "Teilen ist nachgelagert oder umständlich.",
+    terminal: "Das Bild liegt direkt auf dem Smartphone und kann sofort geteilt werden.",
+  },
 ] as const;
 
-const placements = [
-  "Ausgang",
-  "Shop",
-  "Wartebereich",
-  "Gastro",
-  "Laufwege",
-  "Attraktionsumfeld",
+const placementLabels = [
+  "Am Ausgang",
+  "Im Shop",
+  "Im Wartebereich",
+  "In der Gastronomie",
+  "Entlang von Laufwegen",
+  "Direkt im Attraktionsumfeld",
 ] as const;
 
-const faqItems = [
+const faqs = [
   {
     question: "Wie funktioniert EasyTerminal genau?",
     answer:
-      "EasyTerminal zeigt Bilder auf einem Screen, versieht jede Aufnahme mit einem QR-Code und verlagert den Kaufprozess direkt auf das Smartphone des Gastes.",
+      "EasyTerminal zeigt Bilder auf einem Screen, versieht jede Aufnahme mit einem QR-Code und verlagert den gesamten Kaufprozess direkt auf das Smartphone des Gastes.",
   },
   {
     question: "Brauchen Besucher eine App?",
     answer:
-      "Nein. Der Kauf startet ueber den Browser des Smartphones. Das senkt die Huerde und macht den Ablauf deutlich schneller.",
+      "Nein. Der Einstieg funktioniert direkt über den Browser. Das hält die Hürde bewusst niedrig und beschleunigt den Kauf deutlich.",
   },
   {
     question: "Wo kann EasyTerminal installiert werden?",
     answer:
-      "Ueberall dort, wo Sichtbarkeit Kaufimpulse erzeugt: am Ausgang, im Shop, im Wartebereich, in der Gastro oder entlang der Laufwege.",
+      "Überall dort, wo Aufmerksamkeit Kaufimpulse erzeugt: am Ausgang, im Shop, in Laufwegen, im Wartebereich oder in der Gastronomie.",
   },
   {
-    question: "Wie schnell ist die Installation?",
+    question: "Kann ich mehrere Geräte im Park nutzen?",
     answer:
-      "Die Idee hinter EasyTerminal ist eine deutlich reduzierte Hardware- und Prozesslogik. Dadurch ist die Einfuehrung einfacher als bei klassischen Automatenloesungen.",
+      "Ja. Genau darin liegt ein zentraler Vorteil. Mehrere Screens bedeuten mehr Sichtbarkeit und damit mehr Chancen auf zusätzliche Verkäufe.",
   },
   {
-    question: "Kann ich mehrere Geraete im Park nutzen?",
+    question: "Wie sehen Betreiber ihre Umsätze?",
     answer:
-      "Ja. Genau das ist einer der zentralen Vorteile: Statt eines einzelnen Verkaufsortes koennen mehrere Screens im Park parallel Umsatz erzeugen.",
+      "Über das Dashboard lassen sich Umsatz, Käufe und Performance nachvollziehen. So wird sichtbar, welche Platzierung besonders gut funktioniert.",
   },
   {
-    question: "Wie kaufen Gaeste ihr Bild?",
+    question: "Ist die Lösung auch für kleinere Attraktionen geeignet?",
     answer:
-      "Sie sehen ihr Bild auf dem Screen, scannen den QR-Code, kaufen auf dem eigenen Smartphone und sichern die Erinnerung direkt digital.",
-  },
-  {
-    question: "Wie sehe ich meine Umsaetze?",
-    answer:
-      "Ueber das Dashboard erhalten Betreiber einen klaren Blick auf Verkaeufe, Performance und Platzierungen. So wird aus Sichtbarkeit messbarer Umsatz.",
-  },
-  {
-    question: "Ist die Loesung auch fuer kleinere Attraktionen geeignet?",
-    answer:
-      "Ja. Gerade kleinere oder mittlere Betreiber profitieren davon, dass EasyTerminal weniger Platz beansprucht und flexibler aufgestellt werden kann.",
-  },
-  {
-    question: "Kann EasyTerminal klassische Automaten ergaenzen oder ersetzen?",
-    answer:
-      "Beides ist moeglich. EasyTerminal kann bestehende Systeme intelligent ergaenzen oder als modernere Alternative den klassischen Automatenprozess abloesen.",
-  },
-  {
-    question: "Gibt es eine Live-Demo?",
-    answer:
-      "Ja. Die Demo zeigt bereits den Ablauf mit laufenden Bildern, QR-Code und Kaufprozess aus Sicht Ihrer Besucher.",
+      "Ja. Gerade kleinere und mittlere Betreiber profitieren davon, dass EasyTerminal weniger Platz braucht und sich deutlich flexibler einsetzen lässt.",
   },
 ] as const;
 
@@ -132,108 +153,109 @@ function cn(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(" ");
 }
 
-function PlaceholderVisual({
-  label,
-  title,
-  detail,
-  tone = "warm",
-  className,
-}: {
-  label: string;
-  title: string;
-  detail: string;
-  tone?: "warm" | "cool" | "neutral";
-  className?: string;
-}) {
-  const toneClass =
-    tone === "warm"
-      ? "from-[#fff7ef] via-white to-[#fff1e6]"
-      : tone === "cool"
-        ? "from-[#eef5ff] via-white to-[#f4f7fb]"
-        : "from-[#f8f8f6] via-white to-[#f2f2ef]";
+function SectionLabel({ children }: { children: ReactNode }) {
+  return (
+    <p className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#f08936] sm:text-[12px]">
+      {children}
+    </p>
+  );
+}
 
+function ActionLink({
+  href,
+  variant,
+  children,
+}: {
+  href: string;
+  variant: "primary" | "secondary" | "ghost";
+  children: ReactNode;
+}) {
+  const className =
+    variant === "primary"
+      ? "inline-flex items-center justify-center rounded-full bg-[#111111] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#1e1e1e]"
+      : variant === "secondary"
+        ? "inline-flex items-center justify-center rounded-full border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-[#111111] transition hover:border-black/20 hover:bg-[#fafafa]"
+        : "inline-flex items-center justify-center rounded-full border border-white/18 bg-white/8 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/14";
+
+  if (href.startsWith("mailto:")) {
+    return (
+      <a href={href} className={className}>
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  );
+}
+
+function ImageCard({
+  image,
+  alt,
+  eyebrow,
+  title,
+  body,
+  priority = false,
+  className,
+  imageClassName,
+}: {
+  image: StaticImageData;
+  alt: string;
+  eyebrow: string;
+  title: string;
+  body: string;
+  priority?: boolean;
+  className?: string;
+  imageClassName?: string;
+}) {
   return (
     <div
       className={cn(
-        "relative overflow-hidden border border-line bg-white shadow-[0_30px_90px_-60px_rgba(15,23,42,0.35)]",
+        "overflow-hidden rounded-[2rem] border border-black/6 bg-white shadow-[0_24px_80px_-56px_rgba(15,23,42,0.32)]",
         className,
       )}
     >
-      <div className={cn("absolute inset-0 bg-gradient-to-br", toneClass)} />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(240,137,54,0.12),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(17,24,39,0.08),transparent_34%)]" />
-      <div className="relative flex h-full min-h-[18rem] flex-col justify-between p-6 sm:p-8">
-        <div>
-          <span className="inline-flex border border-line bg-white/92 px-3 py-2 text-[11px] font-medium uppercase tracking-[0.24em] text-ink-soft backdrop-blur">
-            {label}
-          </span>
-          <h3 className="mt-6 max-w-sm text-2xl font-semibold tracking-[-0.04em] text-ink sm:text-3xl">
-            {title}
-          </h3>
-        </div>
-        <p className="max-w-md text-sm leading-7 text-ink-soft sm:text-base">{detail}</p>
+      <div className="relative aspect-[16/11] overflow-hidden bg-[#f5f5f7]">
+        <Image
+          src={image}
+          alt={alt}
+          fill
+          priority={priority}
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          className={cn("object-cover", imageClassName)}
+        />
+      </div>
+      <div className="p-6 sm:p-8">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#f08936]">
+          {eyebrow}
+        </p>
+        <h3 className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-[#111111] sm:text-3xl">
+          {title}
+        </h3>
+        <p className="mt-4 max-w-2xl text-base leading-8 text-black/60">{body}</p>
       </div>
     </div>
   );
 }
 
-function SecondaryLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  const className =
-    "inline-flex items-center justify-center border border-line bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:border-ink";
-
-  if (href.startsWith("mailto:")) {
-    return (
-      <a href={href} className={className}>
-        {children}
-      </a>
-    );
-  }
-
-  return (
-    <Link href={href} className={className}>
-      {children}
-    </Link>
-  );
-}
-
-function PrimaryLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  const className =
-    "inline-flex items-center justify-center bg-ink px-5 py-3 text-sm font-semibold text-white transition hover:bg-ink/92";
-
-  if (href.startsWith("mailto:")) {
-    return (
-      <a href={href} className={className}>
-        {children}
-      </a>
-    );
-  }
-
-  return (
-    <Link href={href} className={className}>
-      {children}
-    </Link>
-  );
-}
-
 export function EasyTerminalLanding() {
-  const [activeFaq, setActiveFaq] = useState(0);
+  const [activeFaq, setActiveFaq] = useState<number | null>(0);
+  const [introReady, setIntroReady] = useState(false);
 
   useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setIntroReady(true);
+    });
+
     const elements = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
 
     if (elements.length === 0) {
-      return;
+      return () => {
+        window.cancelAnimationFrame(frame);
+      };
     }
 
     const observer = new IntersectionObserver(
@@ -246,8 +268,8 @@ export function EasyTerminalLanding() {
         }
       },
       {
-        rootMargin: "0px 0px -12% 0px",
-        threshold: 0.18,
+        rootMargin: "0px 0px -10% 0px",
+        threshold: 0.15,
       },
     );
 
@@ -256,130 +278,233 @@ export function EasyTerminalLanding() {
     }
 
     return () => {
+      window.cancelAnimationFrame(frame);
       observer.disconnect();
     };
   }, []);
 
   return (
-    <main className="landing-shell min-h-screen bg-page text-ink">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[38rem] bg-[radial-gradient(circle_at_top,rgba(240,137,54,0.14),transparent_52%),linear-gradient(180deg,rgba(15,23,42,0.035),transparent_48%)]" />
-      <header className="sticky top-0 z-40 border-b border-line/80 bg-white/86 backdrop-blur-xl">
-        <div className="mx-auto flex w-full max-w-[1240px] items-center justify-between gap-6 px-5 py-4 sm:px-8 lg:px-10">
+    <main className={cn("landing-shell min-h-screen text-[#111111]", introReady && "landing-intro-ready")}>
+      <header className="sticky top-0 z-50 border-b border-black/6 bg-white/78 backdrop-blur-2xl">
+        <div className="mx-auto flex w-full max-w-[1280px] items-center justify-between gap-6 px-5 py-4 sm:px-8 lg:px-10">
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative h-10 w-10 overflow-hidden border border-line bg-white">
-              <Image src={liftpicturesLogo} alt="Liftpictures Logo" fill sizes="40px" className="object-cover" />
+            <div className="relative h-10 w-10 overflow-hidden rounded-full border border-black/6 bg-white">
+              <Image
+                src={liftpicturesLogo}
+                alt="Liftpictures Logo"
+                fill
+                sizes="40px"
+                className="object-cover"
+              />
             </div>
             <div>
-              <p className="text-[11px] uppercase tracking-[0.28em] text-accent">Liftpictures</p>
-              <p className="mt-1 text-sm font-semibold text-ink">EasyTerminal</p>
+              <p className="text-[11px] uppercase tracking-[0.28em] text-black/40">Liftpictures</p>
+              <p className="mt-1 text-sm font-semibold text-[#111111]">EasyTerminal</p>
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-6 text-sm text-ink-soft lg:flex">
-            <a href="#problem" className="transition hover:text-ink">
-              Problem
-            </a>
-            <a href="#loesung" className="transition hover:text-ink">
-              Loesung
-            </a>
-            <a href="#vorteile" className="transition hover:text-ink">
+          <nav className="hidden items-center gap-7 text-sm text-black/55 lg:flex">
+            <a href="#vorteile" className="transition hover:text-[#111111]">
               Vorteile
             </a>
-            <a href="#vergleich" className="transition hover:text-ink">
+            <a href="#ablauf" className="transition hover:text-[#111111]">
+              Ablauf
+            </a>
+            <a href="#vergleich" className="transition hover:text-[#111111]">
               Vergleich
             </a>
-            <a href="#faq" className="transition hover:text-ink">
+            <a href="#dashboard" className="transition hover:text-[#111111]">
+              Dashboard
+            </a>
+            <a href="#faq" className="transition hover:text-[#111111]">
               FAQ
             </a>
           </nav>
 
           <div className="hidden items-center gap-3 sm:flex">
-            <SecondaryLink href="mailto:hello@liftpictures.de?subject=EasyTerminal%20Beratung">
+            <ActionLink href="mailto:hello@liftpictures.de?subject=EasyTerminal%20Beratung" variant="secondary">
               Beratung anfragen
-            </SecondaryLink>
-            <PrimaryLink href="/demo">Demo testen</PrimaryLink>
+            </ActionLink>
+            <ActionLink href="/demo" variant="primary">
+              Demo testen
+            </ActionLink>
           </div>
         </div>
       </header>
 
       <section className="relative overflow-hidden">
-        <div className="mx-auto grid w-full max-w-[1240px] gap-14 px-5 pb-20 pt-16 sm:px-8 sm:pb-24 sm:pt-20 lg:grid-cols-[minmax(0,0.96fr)_minmax(0,1.04fr)] lg:items-center lg:px-10 lg:pb-28 lg:pt-24">
-          <div data-reveal className="landing-reveal">
-            <p className="text-[12px] font-medium uppercase tracking-[0.34em] text-accent">
-              EasyTerminal fuer Freizeitattraktionen
+        <div className="absolute inset-x-0 top-0 h-[44rem] bg-[radial-gradient(circle_at_top,rgba(240,137,54,0.12),transparent_42%),linear-gradient(180deg,rgba(245,245,247,0.95),rgba(255,255,255,0))]" />
+        <div className="mx-auto grid w-full max-w-[1280px] gap-14 px-5 pb-24 pt-16 sm:px-8 sm:pb-28 sm:pt-20 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center lg:px-10 lg:pb-36 lg:pt-24">
+          <div data-reveal className="landing-reveal relative z-10">
+            <SectionLabel>Liftpictures präsentiert</SectionLabel>
+
+            <div className="mt-6">
+              <span className="hero-easy text-[clamp(4.5rem,12vw,8.8rem)] font-semibold leading-[0.9] tracking-[-0.085em] text-[#111111]">
+                Easy
+              </span>
+              <span className="hero-terminal mt-1 text-[clamp(4.5rem,12vw,8.8rem)] font-semibold leading-[0.9] tracking-[-0.085em] text-[#111111]">
+                Terminal
+              </span>
+            </div>
+
+            <p className="landing-terminal-code mt-5 text-[11px] uppercase tracking-[0.42em] text-black/42 sm:text-[12px]">
+              Produktstatus: bereit für den nächsten Standard im Bildverkauf
             </p>
-            <h1 className="mt-6 max-w-[11ch] text-5xl font-semibold tracking-[-0.055em] text-ink sm:text-6xl lg:text-7xl">
-              Bilder verkaufen. Einfacher denn je.
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-ink-soft sm:text-xl sm:leading-9">
-              EasyTerminal macht aus Aufmerksamkeit einen modernen Kaufprozess. Bilder laufen auf
-              einem Screen, Gaeste scannen den QR-Code, kaufen auf dem Smartphone und sichern ihre
-              Erinnerung in Sekunden.
+
+            <p className="mt-8 max-w-3xl text-2xl font-medium tracking-[-0.045em] text-[#111111] sm:text-3xl lg:text-[2rem]">
+              Bilder verkaufen. Einfacher. Schneller. Sichtbarer.
+            </p>
+
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-black/62 sm:text-xl sm:leading-9">
+              EasyTerminal ist die minimalistische Hardware-Lösung für Freizeitparks,
+              Sommerrodelbahnen und Erlebnisattraktionen, die Bildverkauf konsequent auf das
+              Smartphone des Gastes verlagert. Weniger Automat. Mehr Umsatz.
             </p>
 
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <PrimaryLink href="/demo">Demo testen</PrimaryLink>
-              <SecondaryLink href="mailto:hello@liftpictures.de?subject=EasyTerminal%20Beratung">
+              <ActionLink href="/demo" variant="primary">
+                Demo testen
+              </ActionLink>
+              <ActionLink href="mailto:hello@liftpictures.de?subject=EasyTerminal%20Beratung" variant="secondary">
                 Beratung anfragen
-              </SecondaryLink>
+              </ActionLink>
             </div>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
-              {[
-                ["Weniger Automat", "Mehr Flexibilitaet im Park"],
-                ["Smartphone-first", "Kaufprozess ohne Bargeld"],
-                ["Mehr Sichtbarkeit", "Mehr Screens, mehr Umsatz"],
-              ].map(([title, body]) => (
-                <div key={title} className="border border-line bg-white/88 p-4 shadow-[0_24px_60px_-48px_rgba(15,23,42,0.28)] backdrop-blur">
-                  <p className="text-sm font-semibold text-ink">{title}</p>
-                  <p className="mt-2 text-sm leading-6 text-ink-soft">{body}</p>
+            <div className="mt-12 grid gap-3 sm:grid-cols-3">
+              {metrics.map((metric) => (
+                <div
+                  key={metric.value}
+                  className="rounded-[1.6rem] border border-black/6 bg-white/78 p-5 shadow-[0_18px_50px_-44px_rgba(15,23,42,0.3)] backdrop-blur"
+                >
+                  <p className="text-sm font-semibold tracking-[-0.02em] text-[#111111]">
+                    {metric.value}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-black/58">{metric.label}</p>
                 </div>
               ))}
             </div>
           </div>
 
           <div data-reveal className="landing-reveal relative">
-            <div className="landing-orb absolute -left-14 top-6 h-32 w-32 rounded-full bg-accent/16 blur-3xl" />
-            <div className="landing-orb absolute -right-10 bottom-8 h-40 w-40 rounded-full bg-[#0f172a]/10 blur-3xl" />
+            <div className="absolute -left-6 top-10 h-36 w-36 rounded-full bg-[#f08936]/18 blur-3xl" />
+            <div className="absolute -right-8 bottom-10 h-40 w-40 rounded-full bg-[#111111]/10 blur-3xl" />
 
-            <div className="relative border border-line bg-white p-4 shadow-[0_40px_120px_-70px_rgba(15,23,42,0.35)] sm:p-6">
-              <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
-                <PlaceholderVisual
-                  label="Hero Produktbild"
-                  title="Schlanke Hardware statt klassischer Automatenwucht."
-                  detail="Bildslot fuer EasyTerminal im Premium-Hero, spaeter mit weissem QR-Terminal und Screen in echter Freizeitszene."
-                  tone="warm"
-                  className="min-h-[28rem]"
+            <div className="relative overflow-hidden rounded-[2.8rem] border border-black/6 bg-white p-3 shadow-[0_40px_130px_-72px_rgba(15,23,42,0.38)] sm:p-4">
+              <div className="relative flex min-h-[34rem] items-center justify-center overflow-hidden rounded-[2.2rem] bg-[radial-gradient(circle_at_top,rgba(240,137,54,0.18),transparent_42%),linear-gradient(180deg,#f8f8f8,#ececef)] p-8 sm:min-h-[39rem] sm:p-12">
+                <Image
+                  src={terminalDevice}
+                  alt="EasyTerminal Gerät"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  className="h-auto w-full max-w-[32rem] object-contain"
                 />
+                <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8 lg:p-10">
+                  <div className="inline-flex rounded-full border border-black/10 bg-white/82 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.3em] text-black/56 backdrop-blur">
+                    EasyTerminal Hardware
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-                <div className="grid gap-4">
-                  <PlaceholderVisual
-                    label="Besucher-Szene"
-                    title="Gaeste scannen direkt mit dem Handy."
-                    detail="Bildslot fuer Szene mit QR-Scan aus Besuchersicht."
-                    tone="cool"
-                    className="min-h-[13rem]"
-                  />
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="border border-line bg-[#0f172a] p-5 text-white shadow-[0_24px_60px_-45px_rgba(15,23,42,0.55)]">
-                      <p className="text-[11px] uppercase tracking-[0.24em] text-white/64">CTA</p>
-                      <p className="mt-4 text-2xl font-semibold tracking-[-0.04em]">
-                        Demo direkt erleben
-                      </p>
-                      <p className="mt-3 text-sm leading-6 text-white/74">
-                        Sehen, wie der Ablauf fuer Ihre Gaeste wirklich aussieht.
-                      </p>
-                    </div>
-                    <div className="border border-line bg-white p-5">
-                      <p className="text-[11px] uppercase tracking-[0.24em] text-accent">
-                        Umsatzhebel
-                      </p>
-                      <p className="mt-4 text-2xl font-semibold tracking-[-0.04em] text-ink">
-                        Mehr Screens
-                      </p>
-                      <p className="mt-3 text-sm leading-6 text-ink-soft">
-                        Mehr Beruehrungspunkte im Park. Mehr Chancen auf Kaufabschluesse.
-                      </p>
+      <section className="mx-auto w-full max-w-[1280px] px-5 py-[4.5rem] sm:px-8 sm:py-24 lg:px-10">
+        <div data-reveal className="landing-reveal grid gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center">
+          <div>
+            <SectionLabel>Das Problem</SectionLabel>
+            <h2 className="mt-5 max-w-[11ch] text-4xl font-semibold tracking-[-0.06em] text-[#111111] sm:text-5xl lg:text-6xl">
+              Klassische Fotoautomaten kosten Zeit, Platz und Verkäufe.
+            </h2>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-black/62 sm:text-xl sm:leading-9">
+              Was für Betreiber wie ein Verkaufsgerät aussieht, fühlt sich für Gäste oft wie ein
+              Umweg an. Münzeinwurf, Wartezeit und Bedienlogik bremsen den Impulskauf genau dort,
+              wo er eigentlich am stärksten sein sollte.
+            </p>
+
+            <div className="mt-10 grid gap-4">
+              {[
+                "Ein Automat mit Bargeld, Wartezeit und Bedienlogik kostet nicht nur Fläche. Er kostet Conversion.",
+                "Ein einzelner Standort reicht oft nicht aus, um Aufmerksamkeit im ganzen Park in Umsatz zu übersetzen.",
+                "Viele Gäste sehen ihr Bild, kaufen aber nicht, weil die Reibung zu hoch ist.",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-[1.5rem] border border-black/6 bg-[#f7f7f8] px-5 py-5 text-base leading-7 text-[#111111] shadow-[0_14px_40px_-38px_rgba(15,23,42,0.24)]"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <ImageCard
+            image={visitorsScanning}
+            alt="Besucher scannen QR-Codes an einem großen Bilder-Screen"
+            eyebrow="Blick auf die reale Nutzung"
+            title="Wenn Gäste sofort verstehen, wie der Kauf funktioniert, sinkt die Hürde spürbar."
+            body="EasyTerminal bringt den Kaufprozess an den Punkt, an dem Aufmerksamkeit entsteht: direkt vor den Bildern und direkt auf das Smartphone des Gastes."
+            className="bg-[#f5f5f7]"
+            imageClassName="object-cover"
+          />
+        </div>
+      </section>
+
+      <section id="ablauf" className="bg-[#f5f5f7] py-[4.5rem] sm:py-24">
+        <div className="mx-auto w-full max-w-[1280px] px-5 sm:px-8 lg:px-10">
+          <div data-reveal className="landing-reveal">
+            <SectionLabel>So funktioniert EasyTerminal</SectionLabel>
+            <h2 className="mt-5 max-w-[13ch] text-4xl font-semibold tracking-[-0.06em] text-[#111111] sm:text-5xl lg:text-6xl">
+              Vom Blick auf den Screen zum Kauf in Sekunden.
+            </h2>
+            <p className="mt-6 max-w-3xl text-lg leading-8 text-black/62 sm:text-xl sm:leading-9">
+              Keine App, kein Bargeld, kein komplizierter Zwischenstopp. Der Ablauf ist
+              selbsterklärend, schnell und fühlt sich für Gäste sofort richtig an.
+            </p>
+
+            <div className="mt-14 grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {steps.map((step) => (
+                  <div
+                    key={step.number}
+                    className="rounded-[1.8rem] border border-black/6 bg-white p-6 shadow-[0_24px_70px_-56px_rgba(15,23,42,0.24)]"
+                  >
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-[#f08936]">
+                      {step.number}
+                    </p>
+                    <h3 className="mt-4 text-2xl font-semibold tracking-[-0.05em] text-[#111111]">
+                      {step.title}
+                    </h3>
+                    <p className="mt-4 text-base leading-8 text-black/62">{step.body}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="relative overflow-hidden rounded-[2rem] border border-black/6 bg-white shadow-[0_30px_90px_-66px_rgba(15,23,42,0.28)]">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(240,137,54,0.12),transparent_36%),linear-gradient(180deg,#ffffff,#f6f6f8)]" />
+                <div className="relative flex h-full min-h-[38rem] flex-col justify-between p-8 sm:p-10">
+                  <div className="max-w-md">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#f08936]">
+                      Produktlogik
+                    </p>
+                    <h3 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[#111111] sm:text-4xl">
+                      Kein Umweg. Kein Bargeld. Kein Verkaufsverlust.
+                    </h3>
+                    <p className="mt-4 text-base leading-8 text-black/62">
+                      Der QR-basierte Kaufprozess senkt Hürden und bringt die Erinnerung dorthin,
+                      wo Gäste ohnehin schon sind: auf ihr Smartphone.
+                    </p>
+                  </div>
+
+                  <div className="mx-auto flex w-full max-w-[26rem] justify-center">
+                    <div className="landing-device-float relative aspect-[5/8] w-full max-w-[18rem]">
+                      <Image
+                        src={terminalDevice}
+                        alt="EasyTerminal Produktbild"
+                        fill
+                        sizes="(max-width: 1024px) 70vw, 24vw"
+                        className="object-contain drop-shadow-[0_30px_50px_rgba(15,23,42,0.18)]"
+                      />
                     </div>
                   </div>
                 </div>
@@ -389,374 +514,288 @@ export function EasyTerminalLanding() {
         </div>
       </section>
 
-      <section id="problem" className="mx-auto w-full max-w-[1240px] px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-        <div data-reveal className="landing-reveal grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-          <div>
-            <p className="text-[12px] font-medium uppercase tracking-[0.32em] text-accent">
-              Das Problem
-            </p>
-            <h2 className="mt-5 max-w-[12ch] text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl">
-              Ein klassischer Automat kostet mehr als nur Platz.
-            </h2>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-ink-soft">
-              Muenzeinwurf, Wartezeit und Bedienlogik bremsen den Kaufprozess genau dort, wo
-              Impulskauf staerker wirken sollte. Was fuer Betreiber wie ein Verkaufsgeraet aussieht,
-              fuehlt sich fuer Gaeste oft wie ein Umweg an.
-            </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {[
-              "Ein Automat mit Bargeld, Wartezeit und Bedienlogik kostet nicht nur Flaeche. Er kostet Verkaeufe.",
-              "Zeit ist im Park kein Nebenthema. Jede zusaetzliche Huerde senkt die Kaufwahrscheinlichkeit.",
-              "Viele Gaeste sehen ihr Bild, kaufen aber nicht, weil der Prozess zu viel Reibung erzeugt.",
-              "Ein einzelner Verkaufsautomat reicht oft nicht aus, um Aufmerksamkeit im ganzen Park in Umsatz zu verwandeln.",
-            ].map((item) => (
-              <div key={item} className="border border-line bg-white p-5 shadow-[0_20px_70px_-58px_rgba(15,23,42,0.28)]">
-                <p className="text-sm leading-7 text-ink">{item}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="loesung" className="mx-auto w-full max-w-[1240px] px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
+      <section id="vorteile" className="mx-auto w-full max-w-[1280px] px-5 py-[4.5rem] sm:px-8 sm:py-24 lg:px-10">
         <div data-reveal className="landing-reveal">
-          <div className="max-w-3xl">
-            <p className="text-[12px] font-medium uppercase tracking-[0.32em] text-accent">
-              Die Loesung
-            </p>
-            <h2 className="mt-5 text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl">
-              Vom Blick auf den Screen zum Kauf in Sekunden.
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-ink-soft">
-              Bilder laufen durch, QR-Code wird gescannt, Checkout passiert auf dem eigenen
-              Smartphone und die Erinnerung ist direkt gesichert. Kein Umweg. Kein Bargeld. Kein
-              Verkaufsverlust.
-            </p>
-          </div>
+          <SectionLabel>Vorteile für Betreiber</SectionLabel>
+          <h2 className="mt-5 max-w-[13ch] text-4xl font-semibold tracking-[-0.06em] text-[#111111] sm:text-5xl lg:text-6xl">
+            Mehr Sichtbarkeit. Mehr Kaufanreize. Weniger Hürden.
+          </h2>
+          <p className="mt-6 max-w-3xl text-lg leading-8 text-black/62 sm:text-xl sm:leading-9">
+            EasyTerminal verbindet hochwertige Hardware, modernen Smartphone-Checkout und einen
+            klaren Verkaufsprozess zu einer Lösung, die im Park sichtbar und im Ergebnis messbar
+            wird.
+          </p>
 
-          <div className="mt-12 grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {steps.map((step) => (
-                <div key={step.number} className="border border-line bg-white p-6 shadow-[0_24px_70px_-60px_rgba(15,23,42,0.28)]">
-                  <p className="text-[12px] font-medium uppercase tracking-[0.28em] text-accent">
-                    {step.number}
-                  </p>
-                  <h3 className="mt-4 text-xl font-semibold tracking-[-0.04em] text-ink">
-                    {step.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-7 text-ink-soft">{step.body}</p>
-                </div>
-              ))}
-            </div>
-
-            <PlaceholderVisual
-              label="Produktablauf"
-              title="Bild sehen. QR scannen. Am Handy kaufen. Erinnerung direkt sichern."
-              detail="Bildslot fuer Screen mit durchlaufenden Bildern, Smartphone-Checkout und finalem Bildkauf."
-              tone="cool"
-              className="min-h-[30rem]"
-            />
-          </div>
-        </div>
-      </section>
-
-      <section id="vorteile" className="mx-auto w-full max-w-[1240px] px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-        <div data-reveal className="landing-reveal">
-          <div className="max-w-3xl">
-            <p className="text-[12px] font-medium uppercase tracking-[0.32em] text-accent">
-              Vorteile fuer Betreiber
-            </p>
-            <h2 className="mt-5 text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl">
-              Mehr Sichtbarkeit. Mehr Kaufanreize. Weniger Huerden.
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-ink-soft">
-              EasyTerminal ist nicht nur ein Screen. Es ist eine moderne Verkaufslogik fuer Parks,
-              Sommerrodelbahnen und Erlebnisattraktionen, die Aufmerksamkeit in Umsatz uebersetzt.
-            </p>
-          </div>
-
-          <div className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-14 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {benefits.map((benefit) => (
-              <div key={benefit.title} className="border border-line bg-white p-6 shadow-[0_24px_70px_-60px_rgba(15,23,42,0.28)]">
-                <h3 className="text-xl font-semibold tracking-[-0.04em] text-ink">{benefit.title}</h3>
-                <p className="mt-4 text-sm leading-7 text-ink-soft">{benefit.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="vergleich" className="mx-auto w-full max-w-[1240px] px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-        <div data-reveal className="landing-reveal grid gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-          <div>
-            <p className="text-[12px] font-medium uppercase tracking-[0.32em] text-accent">
-              Vergleich
-            </p>
-            <h2 className="mt-5 text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl">
-              Weniger Automat. Mehr Umsatz.
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-ink-soft">
-              EasyTerminal wirkt nicht dadurch ueberlegen, dass klassische Systeme schlecht sind,
-              sondern dadurch, dass der moderne Kaufprozess einfacher, schlanker und fuer den Park
-              strategisch nutzbarer wird.
-            </p>
-            <div className="mt-8">
-              <SecondaryLink href="/demo">Live-Demo ansehen</SecondaryLink>
-            </div>
-          </div>
-
-          <div className="overflow-hidden border border-line bg-white shadow-[0_30px_90px_-70px_rgba(15,23,42,0.32)]">
-            <div className="grid grid-cols-[1.05fr_0.95fr_0.95fr] border-b border-line bg-page-strong">
-              <div className="px-5 py-4 text-sm font-semibold text-ink">Kategorie</div>
-              <div className="border-l border-line px-5 py-4 text-sm font-semibold text-ink-soft">
-                Klassischer Automat
-              </div>
-              <div className="border-l border-line px-5 py-4 text-sm font-semibold text-ink">
-                EasyTerminal
-              </div>
-            </div>
-            {comparisonRows.map(([topic, classic, terminal], index) => (
               <div
-                key={topic}
-                className={cn(
-                  "grid grid-cols-[1.05fr_0.95fr_0.95fr]",
-                  index !== comparisonRows.length - 1 && "border-b border-line",
-                )}
+                key={benefit.title}
+                className="rounded-[1.8rem] border border-black/6 bg-white p-7 shadow-[0_22px_70px_-58px_rgba(15,23,42,0.24)]"
               >
-                <div className="px-5 py-4 text-sm font-medium text-ink">{topic}</div>
-                <div className="border-l border-line px-5 py-4 text-sm leading-6 text-ink-soft">
-                  {classic}
-                </div>
-                <div className="border-l border-line px-5 py-4 text-sm leading-6 text-ink">
-                  {terminal}
-                </div>
+                <h3 className="text-2xl font-semibold tracking-[-0.05em] text-[#111111]">
+                  {benefit.title}
+                </h3>
+                <p className="mt-4 text-base leading-8 text-black/62">{benefit.body}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-[1240px] px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-        <div data-reveal className="landing-reveal grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-          <div className="border border-line bg-white p-8 shadow-[0_30px_90px_-70px_rgba(15,23,42,0.32)]">
-            <p className="text-[12px] font-medium uppercase tracking-[0.32em] text-accent">
-              Smartphone-Kaufverhalten
-            </p>
-            <h2 className="mt-5 text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl">
-              Das Smartphone hat jeder Gast in der Hand.
+      <section className="mx-auto w-full max-w-[1280px] px-5 py-6 sm:px-8 lg:px-10">
+        <div data-reveal className="landing-reveal">
+          <ImageCard
+            image={parkTerminals}
+            alt="Mehrere EasyTerminal-Displays in einem Freizeitpark"
+            eyebrow="Mehrere Displays im Park"
+            title="Ein klassischer Automat steht an einem Ort. EasyTerminal kann im ganzen Park verkaufen."
+            body="Jede zusätzliche Platzierung erhöht die Chance auf einen Kauf. Sichtbarkeit ist kein Designfaktor. Sichtbarkeit ist Umsatz. Genau deshalb lässt sich EasyTerminal entlang der wirklichen Laufwege der Gäste verteilen."
+            priority
+          />
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            {placementLabels.map((label) => (
+              <span
+                key={label}
+                className="inline-flex rounded-full border border-black/8 bg-[#f5f5f7] px-4 py-2 text-sm font-medium text-[#111111]"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-[1280px] px-5 py-[4.5rem] sm:px-8 sm:py-24 lg:px-10">
+        <div data-reveal className="landing-reveal grid gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center">
+          <div className="rounded-[2rem] border border-black/6 bg-[#111111] p-8 text-white shadow-[0_36px_90px_-62px_rgba(15,23,42,0.64)] sm:p-10">
+            <SectionLabel>Warum Smartphone-first überzeugt</SectionLabel>
+            <h2 className="mt-5 max-w-[12ch] text-4xl font-semibold tracking-[-0.06em] text-white sm:text-5xl">
+              Der Kauf sollte dort stattfinden, wo Gäste ohnehin schon sind.
             </h2>
-            <p className="mt-6 text-lg leading-8 text-ink-soft">
-              Portemonnaie oder Bargeld hat nicht jeder sofort griffbereit, das Handy dagegen fast
-              immer. Genau dort sollte auch der Checkout stattfinden. Weniger Schritte bedeuten
-              weniger Abbruch und mehr Umsatz.
+            <p className="mt-6 text-lg leading-8 text-white/72">
+              Portemonnaie oder Bargeld hat nicht jeder sofort dabei. Das Smartphone dagegen fast
+              immer. Wer Erinnerungen teilen will, will nicht erst einen Automaten verstehen.
             </p>
+
             <div className="mt-10 grid gap-4 sm:grid-cols-2">
-              <div className="border border-line bg-page p-5">
-                <p className="text-sm font-semibold text-ink">Vertrauter Prozess</p>
-                <p className="mt-3 text-sm leading-7 text-ink-soft">
-                  Kauf am eigenen Geraet fuehlt sich sicherer, schneller und intuitiver an als ein
-                  klassischer Automat.
+              <div className="rounded-[1.4rem] border border-white/10 bg-white/6 p-5">
+                <p className="text-sm font-semibold text-white">Vertrauter Checkout</p>
+                <p className="mt-3 text-sm leading-7 text-white/64">
+                  Der Kauf auf dem eigenen Gerät fühlt sich schneller, moderner und sicherer an.
                 </p>
               </div>
-              <div className="border border-line bg-page p-5">
-                <p className="text-sm font-semibold text-ink">Einfacher teilen</p>
-                <p className="mt-3 text-sm leading-7 text-ink-soft">
-                  Wer Erinnerungen teilen will, will nicht erst einen Automaten verstehen. Social
-                  Sharing wird auf dem Smartphone zur natuerlichen Verlaengerung des Kaufs.
+              <div className="rounded-[1.4rem] border border-white/10 bg-white/6 p-5">
+                <p className="text-sm font-semibold text-white">Einfacher teilen</p>
+                <p className="mt-3 text-sm leading-7 text-white/64">
+                  Die Erinnerung landet direkt auf dem Smartphone und kann sofort geteilt werden.
                 </p>
               </div>
             </div>
           </div>
 
-          <PlaceholderVisual
-            label="Szene Besucher mit QR"
-            title="Weniger Reibung. Hoehere Conversion."
-            detail="Bildslot fuer Besucher, die den QR-Code auf dem eigenen Smartphone scannen und direkt kaufen."
-            tone="warm"
-            className="min-h-[32rem]"
+          <ImageCard
+            image={visitorsScanning}
+            alt="Besucher scannen Bilder am großen Screen mit dem Smartphone"
+            eyebrow="QR-Kauf in der Praxis"
+            title="Weniger Schritte. Weniger Abbruch. Mehr Umsatz."
+            body="Wenn der QR-Code direkt am Bild erscheint und der Kauf ohne weitere Hürden startet, wird aus Aufmerksamkeit deutlich häufiger ein Abschluss."
+            className="bg-[#f5f5f7]"
           />
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-[1240px] px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-        <div data-reveal className="landing-reveal grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-          <div>
-            <p className="text-[12px] font-medium uppercase tracking-[0.32em] text-accent">
-              Mehrere Displays im Park
-            </p>
-            <h2 className="mt-5 text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl">
-              Ein klassischer Automat steht an einem Ort. EasyTerminal kann im ganzen Park verkaufen.
+      <section id="vergleich" className="bg-[#f5f5f7] py-[4.5rem] sm:py-24">
+        <div className="mx-auto w-full max-w-[1280px] px-5 sm:px-8 lg:px-10">
+          <div data-reveal className="landing-reveal">
+            <SectionLabel>Vergleich</SectionLabel>
+            <h2 className="mt-5 max-w-[10ch] text-4xl font-semibold tracking-[-0.06em] text-[#111111] sm:text-5xl lg:text-6xl">
+              Weniger Automat. Mehr Umsatz.
             </h2>
-            <p className="mt-6 text-lg leading-8 text-ink-soft">
-              Jede zusaetzliche Platzierung erhoeht die Chance auf einen Kauf. Sichtbarkeit ist kein
-              Designfaktor. Sichtbarkeit ist Umsatz.
+            <p className="mt-6 max-w-3xl text-lg leading-8 text-black/62 sm:text-xl sm:leading-9">
+              EasyTerminal positioniert sich nicht durch laute Versprechen, sondern durch den
+              sichtbar besseren Ablauf: weniger Hardware-Hürde, mehr Flexibilität und ein moderner
+              Kaufprozess auf dem Smartphone.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              {placements.map((placement) => (
-                <span
-                  key={placement}
-                  className="inline-flex border border-line bg-white px-4 py-2 text-sm font-medium text-ink"
+
+            <div className="mt-14 overflow-hidden rounded-[2rem] border border-black/6 bg-white shadow-[0_28px_90px_-66px_rgba(15,23,42,0.24)]">
+              <div className="overflow-x-auto">
+                <div className="min-w-[760px]">
+                  <div className="grid grid-cols-[1.05fr_1fr_1fr] border-b border-black/6 bg-[#fafafb]">
+                    <div className="px-6 py-5 text-sm font-semibold text-[#111111]">Kategorie</div>
+                    <div className="border-l border-black/6 px-6 py-5 text-sm font-semibold text-black/52">
+                      Klassischer Automat
+                    </div>
+                    <div className="border-l border-black/6 px-6 py-5 text-sm font-semibold text-[#111111]">
+                      EasyTerminal
+                    </div>
+                  </div>
+
+                  {comparisonRows.map((row, index) => (
+                    <div
+                      key={row.topic}
+                      className={cn(
+                        "grid grid-cols-[1.05fr_1fr_1fr]",
+                        index !== comparisonRows.length - 1 && "border-b border-black/6",
+                      )}
+                    >
+                      <div className="px-6 py-5 text-sm font-semibold text-[#111111]">{row.topic}</div>
+                      <div className="border-l border-black/6 px-6 py-5 text-sm leading-7 text-black/56">
+                        {row.classic}
+                      </div>
+                      <div className="border-l border-black/6 px-6 py-5 text-sm leading-7 text-[#111111]">
+                        {row.terminal}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="dashboard" className="mx-auto w-full max-w-[1280px] px-5 py-[4.5rem] sm:px-8 sm:py-24 lg:px-10">
+        <div data-reveal className="landing-reveal grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
+          <ImageCard
+            image={dashboardShot}
+            alt="Dashboard mit Umsatz, Käufen und Performance"
+            eyebrow="Dashboard & Transparenz"
+            title="Verkaufen ist gut. Verstehen, was verkauft, ist besser."
+            body="EasyTerminal endet nicht beim Kauf. Das Dashboard schafft Transparenz über Umsatz, Käufe und Performance und macht den Bildverkauf im Park datenbasiert steuerbar."
+            className="bg-[#f5f5f7]"
+            imageClassName="object-cover object-top"
+          />
+
+          <div>
+            <SectionLabel>Mehr Überblick</SectionLabel>
+            <h2 className="mt-5 max-w-[11ch] text-4xl font-semibold tracking-[-0.06em] text-[#111111] sm:text-5xl">
+              Kontrolle statt Blackbox.
+            </h2>
+            <p className="mt-6 text-lg leading-8 text-black/62 sm:text-xl sm:leading-9">
+              Betreiber sehen auf einen Blick, wie sich Verkäufe entwickeln, welche Platzierungen
+              besonders gut funktionieren und wo weiteres Potenzial liegt.
+            </p>
+
+            <div className="mt-10 grid gap-4">
+              {[
+                "Wo entsteht mein Umsatz?",
+                "Welche Platzierung funktioniert am besten?",
+                "Wie entwickeln sich Käufe im Tagesverlauf?",
+                "Welche Screens erzeugen die meisten Verkäufe?",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-[1.5rem] border border-black/6 bg-[#f7f7f8] px-5 py-5 text-base font-medium text-[#111111] shadow-[0_12px_36px_-34px_rgba(15,23,42,0.22)]"
                 >
-                  {placement}
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-[1280px] px-5 py-[4.5rem] sm:px-8 sm:py-24 lg:px-10">
+        <div data-reveal className="landing-reveal grid gap-10 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-center">
+          <div className="rounded-[2rem] border border-black/6 bg-[linear-gradient(180deg,#ffffff_0%,#f5f5f7_100%)] p-8 shadow-[0_30px_90px_-66px_rgba(15,23,42,0.24)] sm:p-10">
+            <SectionLabel>Hardware</SectionLabel>
+            <h2 className="mt-5 max-w-[11ch] text-4xl font-semibold tracking-[-0.06em] text-[#111111] sm:text-5xl">
+              Schlank. Hochwertig. Zukunftsfähig.
+            </h2>
+            <p className="mt-6 text-lg leading-8 text-black/62">
+              EasyTerminal wirkt nicht wie ein klobiger Verkaufsautomat, sondern wie ein modernes,
+              minimalistisches Display-System für eine zeitgemäße Attraktion.
+            </p>
+            <div className="mt-10 flex flex-wrap gap-3">
+              {["Schlank", "Dezent", "Robust", "Modern", "Skalierbar", "Hochwertig"].map((word) => (
+                <span
+                  key={word}
+                  className="inline-flex rounded-full border border-black/8 bg-white px-4 py-2 text-sm font-medium text-[#111111]"
+                >
+                  {word}
                 </span>
               ))}
             </div>
           </div>
 
-          <PlaceholderVisual
-            label="Mehrere Geraete im Park"
-            title="Mehr Screens bedeuten mehr Sichtbarkeit."
-            detail="Bildslot fuer Szene mit mehreren EasyTerminal-Positionen im Park: Ausgang, Shop, Gastro, Laufwege und Wartebereiche."
-            tone="cool"
-            className="min-h-[30rem]"
-          />
-        </div>
-      </section>
-
-      <section className="mx-auto w-full max-w-[1240px] px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-        <div data-reveal className="landing-reveal grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-          <PlaceholderVisual
-            label="Dashboard Mockup"
-            title="Verkaufen ist gut. Verstehen, was verkauft, ist besser."
-            detail="Bildslot fuer Dashboard mit Umsatz, Performance, Screens und Standortvergleich."
-            tone="neutral"
-            className="min-h-[34rem]"
-          />
-
-          <div className="border border-line bg-white p-8 shadow-[0_30px_90px_-70px_rgba(15,23,42,0.32)]">
-            <p className="text-[12px] font-medium uppercase tracking-[0.32em] text-accent">
-              Dashboard & Transparenz
-            </p>
-            <h2 className="mt-5 text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl">
-              Mehr Ueberblick ueber das, was wirklich Umsatz bringt.
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-ink-soft">
-              Betreiber sehen ihren Umsatz, erkennen starke Platzierungen und verstehen, welche
-              Touchpoints im Park besser performen. Das schafft Kontrolle statt Blackbox.
-            </p>
-            <div className="mt-10 grid gap-4">
-              {[
-                "Wo sehe ich meinen Umsatz?",
-                "Welche Platzierung funktioniert?",
-                "Wie entwickeln sich Verkaeufe?",
-                "Welche Standorte performen besser?",
-              ].map((question) => (
-                <div key={question} className="border border-line bg-page px-5 py-4">
-                  <p className="text-sm font-medium text-ink">{question}</p>
-                </div>
-              ))}
+          <div className="relative overflow-hidden rounded-[2.4rem] border border-black/6 bg-[#f5f5f7] shadow-[0_36px_100px_-70px_rgba(15,23,42,0.28)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(240,137,54,0.14),transparent_28%),linear-gradient(180deg,#ffffff_0%,#f5f5f7_100%)]" />
+            <div className="relative flex min-h-[34rem] items-center justify-center p-8 sm:min-h-[40rem] sm:p-12">
+              <div className="landing-device-float relative aspect-[5/8] w-full max-w-[20rem]">
+                <Image
+                  src={terminalDevice}
+                  alt="Freigestelltes EasyTerminal Produktbild"
+                  fill
+                  sizes="(max-width: 1024px) 70vw, 26vw"
+                  className="object-contain drop-shadow-[0_38px_70px_rgba(15,23,42,0.18)]"
+                />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-[1240px] px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-        <div data-reveal className="landing-reveal grid gap-10 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
-          <div className="border border-line bg-[#0f172a] p-8 text-white shadow-[0_34px_100px_-74px_rgba(15,23,42,0.72)]">
-            <p className="text-[12px] font-medium uppercase tracking-[0.32em] text-[#f8a665]">
-              Hardware
-            </p>
-            <h2 className="mt-5 text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl">
-              Schlank. Robust. Dezent. Modern.
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-white/74">
-              EasyTerminal ist als hochwertige, minimalistische Hardware gedacht. Kein klobiger
-              Automat, sondern ein elegantes Display-System, das sich modern in den Park einfuegt.
-            </p>
-            <div className="mt-10 flex flex-wrap gap-3">
-              {["schlank", "robust", "dezent", "hochwertig", "modern", "zukunftsfaehig"].map(
-                (word) => (
-                  <span
-                    key={word}
-                    className="inline-flex border border-white/12 bg-white/6 px-4 py-2 text-sm font-medium text-white"
-                  >
-                    {word}
-                  </span>
-                ),
-              )}
-            </div>
-          </div>
-
-          <PlaceholderVisual
-            label="Produktinszenierung"
-            title="Eine Hardware, die professionell wirkt und sich professionell verkauft."
-            detail="Bildslot fuer weisses EasyTerminal, Screen am Ausgang und cleanes Hardware-Setup in Parkumgebung."
-            tone="neutral"
-            className="min-h-[32rem]"
-          />
-        </div>
-      </section>
-
-      <section id="cta" className="mx-auto w-full max-w-[1240px] px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
-        <div data-reveal className="landing-reveal overflow-hidden border border-line bg-[linear-gradient(135deg,#0f172a_0%,#162136_52%,#1d2a42_100%)] p-8 text-white shadow-[0_36px_120px_-80px_rgba(15,23,42,0.8)] sm:p-12">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+      <section className="mx-auto w-full max-w-[1280px] px-5 py-6 sm:px-8 lg:px-10">
+        <div data-reveal className="landing-reveal overflow-hidden rounded-[2.4rem] border border-black/6 bg-[linear-gradient(135deg,#0d0d10_0%,#15171d_54%,#1d2028_100%)] px-8 py-10 text-white shadow-[0_40px_120px_-70px_rgba(15,23,42,0.76)] sm:px-12 sm:py-14">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div>
-              <p className="text-[12px] font-medium uppercase tracking-[0.32em] text-[#f8a665]">
-                Demo testen
-              </p>
-              <h2 className="mt-5 max-w-[12ch] text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl">
+              <SectionLabel>Demo testen</SectionLabel>
+              <h2 className="mt-5 max-w-[11ch] text-4xl font-semibold tracking-[-0.06em] text-white sm:text-5xl lg:text-6xl">
                 Erleben Sie den Ablauf aus Sicht Ihrer Besucher.
               </h2>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/74">
-                Sehen Sie, wie Bilder praesentiert werden, wie der QR-basierte Kaufprozess
-                funktioniert und warum EasyTerminal weniger Reibung in mehr Umsatz uebersetzt.
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/70 sm:text-xl sm:leading-9">
+                Sehen Sie, wie Bilder durchlaufen, wie der QR-basierte Kaufprozess funktioniert und
+                wie schnell aus Aufmerksamkeit ein Kaufabschluss werden kann.
               </p>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <Link
-                href="/demo"
-                className="inline-flex items-center justify-center bg-white px-6 py-3 text-sm font-semibold text-ink transition hover:bg-white/94"
-              >
+              <ActionLink href="/demo" variant="ghost">
                 Demo testen
-              </Link>
-              <a
-                href="mailto:hello@liftpictures.de?subject=EasyTerminal%20Live-Demo"
-                className="inline-flex items-center justify-center border border-white/16 bg-white/6 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
-              >
+              </ActionLink>
+              <ActionLink href="mailto:hello@liftpictures.de?subject=EasyTerminal%20Live-Demo" variant="ghost">
                 Live-Demo ansehen
-              </a>
+              </ActionLink>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="faq" className="mx-auto w-full max-w-[1240px] px-5 py-16 sm:px-8 sm:py-20 lg:px-10">
+      <section id="faq" className="mx-auto w-full max-w-[1280px] px-5 py-[4.5rem] sm:px-8 sm:py-24 lg:px-10">
         <div data-reveal className="landing-reveal">
-          <div className="max-w-3xl">
-            <p className="text-[12px] font-medium uppercase tracking-[0.32em] text-accent">FAQ</p>
-            <h2 className="mt-5 text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl">
-              Haeufige Fragen von Betreibern.
-            </h2>
-          </div>
+          <SectionLabel>FAQ</SectionLabel>
+          <h2 className="mt-5 max-w-[11ch] text-4xl font-semibold tracking-[-0.06em] text-[#111111] sm:text-5xl lg:text-6xl">
+            Häufige Fragen von Betreibern.
+          </h2>
 
           <div className="mt-12 grid gap-4">
-            {faqItems.map((item, index) => {
+            {faqs.map((faq, index) => {
               const isOpen = activeFaq === index;
 
               return (
                 <button
-                  key={item.question}
+                  key={faq.question}
                   type="button"
-                  onClick={() => setActiveFaq(isOpen ? -1 : index)}
-                  className="border border-line bg-white p-6 text-left shadow-[0_22px_70px_-62px_rgba(15,23,42,0.28)]"
+                  onClick={() => setActiveFaq(isOpen ? null : index)}
+                  className="rounded-[1.8rem] border border-black/6 bg-white px-6 py-6 text-left shadow-[0_20px_70px_-60px_rgba(15,23,42,0.24)] sm:px-8"
                 >
                   <div className="flex items-start justify-between gap-6">
-                    <h3 className="text-lg font-semibold tracking-[-0.03em] text-ink">
-                      {item.question}
+                    <h3 className="text-xl font-semibold tracking-[-0.04em] text-[#111111]">
+                      {faq.question}
                     </h3>
-                    <span className="text-xl font-medium text-accent">{isOpen ? "−" : "+"}</span>
+                    <span className="text-2xl font-medium text-[#f08936]">
+                      {isOpen ? "−" : "+"}
+                    </span>
                   </div>
                   <div
                     className={cn(
-                      "grid transition-[grid-template-rows,opacity,margin] duration-300",
+                      "grid overflow-hidden transition-[grid-template-rows,opacity,margin] duration-300",
                       isOpen ? "mt-4 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0",
                     )}
                   >
                     <div className="overflow-hidden">
-                      <p className="max-w-3xl text-sm leading-7 text-ink-soft">{item.answer}</p>
+                      <p className="max-w-3xl text-base leading-8 text-black/62">{faq.answer}</p>
                     </div>
                   </div>
                 </button>
@@ -766,52 +805,59 @@ export function EasyTerminalLanding() {
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-[1240px] px-5 pb-20 pt-6 sm:px-8 sm:pb-24 lg:px-10">
-        <div data-reveal className="landing-reveal border border-line bg-white p-8 shadow-[0_30px_90px_-70px_rgba(15,23,42,0.32)] sm:p-12">
+      <section className="mx-auto w-full max-w-[1280px] px-5 pb-[5.5rem] pt-2 sm:px-8 sm:pb-28 lg:px-10">
+        <div data-reveal className="landing-reveal rounded-[2.4rem] border border-black/6 bg-[#f5f5f7] p-8 shadow-[0_28px_90px_-68px_rgba(15,23,42,0.24)] sm:p-12">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div>
-              <p className="text-[12px] font-medium uppercase tracking-[0.32em] text-accent">
-                Abschluss
-              </p>
-              <h2 className="mt-5 max-w-[14ch] text-4xl font-semibold tracking-[-0.05em] text-ink sm:text-5xl">
-                Weniger Reibung. Mehr Verkaeufe.
+              <SectionLabel>Abschluss</SectionLabel>
+              <h2 className="mt-5 max-w-[12ch] text-4xl font-semibold tracking-[-0.06em] text-[#111111] sm:text-5xl lg:text-6xl">
+                Machen Sie es Ihren Gästen leicht, Erinnerungen mitzunehmen.
               </h2>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-ink-soft">
-                Machen Sie es Ihren Gaesten leicht, Erinnerungen mitzunehmen, und modernisieren Sie
-                den Bildverkauf im Park mit einer Loesung, die schlank, sichtbar und zukunftsfaehig
-                ist.
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-black/62 sm:text-xl sm:leading-9">
+                Modernisieren Sie den Bildverkauf mit einer Lösung, die weniger Platz braucht,
+                sichtbarer verkauft und den gesamten Kaufprozess auf das Gerät des Gastes bringt.
               </p>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <PrimaryLink href="/demo">Demo testen</PrimaryLink>
-              <SecondaryLink href="mailto:hello@liftpictures.de?subject=EasyTerminal%20Beratung">
+              <ActionLink href="/demo" variant="primary">
+                Demo testen
+              </ActionLink>
+              <ActionLink href="mailto:hello@liftpictures.de?subject=EasyTerminal%20Beratung" variant="secondary">
                 Beratung anfragen
-              </SecondaryLink>
+              </ActionLink>
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="border-t border-line bg-white/82">
-        <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-6 px-5 py-8 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+      <footer className="border-t border-black/6 bg-white">
+        <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-5 py-8 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
           <div className="flex items-center gap-3">
-            <div className="relative h-10 w-10 overflow-hidden border border-line bg-white">
-              <Image src={liftpicturesLogo} alt="Liftpictures Logo" fill sizes="40px" className="object-cover" />
+            <div className="relative h-10 w-10 overflow-hidden rounded-full border border-black/6 bg-white">
+              <Image
+                src={liftpicturesLogo}
+                alt="Liftpictures Logo"
+                fill
+                sizes="40px"
+                className="object-cover"
+              />
             </div>
             <div>
-              <p className="text-sm font-semibold text-ink">Liftpictures EasyTerminal</p>
-              <p className="mt-1 text-sm text-ink-soft">
-                Moderner Bildverkauf fuer Freizeitparks und Erlebnisattraktionen.
+              <p className="text-sm font-semibold text-[#111111]">Liftpictures EasyTerminal</p>
+              <p className="mt-1 text-sm text-black/52">
+                Moderner Bildverkauf für Freizeitparks und Erlebnisattraktionen.
               </p>
             </div>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <PrimaryLink href="/demo">Demo testen</PrimaryLink>
-            <SecondaryLink href="mailto:hello@liftpictures.de?subject=EasyTerminal%20Beratung">
+            <ActionLink href="/demo" variant="secondary">
+              Demo testen
+            </ActionLink>
+            <ActionLink href="mailto:hello@liftpictures.de?subject=EasyTerminal%20Beratung" variant="secondary">
               Beratung anfragen
-            </SecondaryLink>
+            </ActionLink>
           </div>
         </div>
       </footer>
