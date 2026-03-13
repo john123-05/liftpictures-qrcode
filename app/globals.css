@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+:root {
+  --page: #ffffff;
+  --page-strong: #f7f7f4;
+  --surface: rgba(255, 255, 255, 0.96);
+  --surface-strong: rgba(255, 255, 255, 1);
+  --line: rgba(15, 23, 42, 0.09);
+  --line-strong: rgba(15, 23, 42, 0.14);
+  --ink: #111827;
+  --ink-soft: rgba(17, 24, 39, 0.62);
+  --accent: #f08936;
+  --accent-soft: rgba(240, 137, 54, 0.1);
+  --shadow: 0 20px 50px -42px rgba(15, 23, 42, 0.22);
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-page-strong: var(--page-strong);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--page);
+  color: var(--ink);
+}
+
+body {
+  min-height: 100vh;
+  background: var(--page);
+  color: var(--ink);
+  font-family: "Avenir Next", "Helvetica Neue", "Segoe UI", sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+}
+
+::selection {
+  background: rgba(240, 137, 54, 0.18);
+}
+
+.screen-shell {
+  position: relative;
+}
+
+.gallery-track {
+  will-change: transform;
+  animation: gallery-scroll var(--scroll-duration, 360s) linear infinite;
+}
+
+@keyframes gallery-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-track {
+    animation: none;
+  }
+}
