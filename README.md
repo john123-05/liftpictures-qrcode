@@ -35,6 +35,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 SUPABASE_SERVICE_ROLE_KEY=...
 STRIPE_SECRET_KEY=sk_test_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
+ALLOW_MOCK_CHECKOUT=false
 NEXT_PUBLIC_GALLERY_LIMIT=180
 NEXT_PUBLIC_GALLERY_PARK_ID=
 ```
@@ -65,6 +66,16 @@ npm run build
 Wichtig:
 - Ein echter Handy-QR-Scan braucht eine oeffentliche URL
 - `localhost` funktioniert beim Scannen mit der Kamera-App normalerweise nicht direkt
+
+## Schneller Test ohne Stripe-Zugang
+
+Wenn du den Flow sofort testen willst, kannst du in einer Testumgebung voruebergehend Mock-Checkout aktivieren:
+
+```env
+ALLOW_MOCK_CHECKOUT=true
+```
+
+Dann wird nach Name/E-Mail kein echter Stripe-Checkout geoeffnet, sondern die Bestellung direkt als bezahlt markiert und die Success-Seite mit Download/Teilen freigeschaltet. Das ist nur fuer schnelle interne Tests gedacht und sollte vor einem echten Livegang wieder auf `false` stehen.
 
 ## Projektstruktur
 

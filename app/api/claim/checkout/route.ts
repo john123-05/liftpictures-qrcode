@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { createClaimOrder, attachCheckoutSessionToClaimOrder } from "@/lib/claim-orders";
+import {
+  createClaimOrder,
+  attachCheckoutSessionToClaimOrder,
+  markClaimOrderPaid,
+} from "@/lib/claim-orders";
 import { getClaimPhotoById } from "@/lib/claim";
 import { getStripeServerClient } from "@/lib/stripe";
 import type { ClaimCheckoutPayload } from "@/types/claim";
@@ -18,6 +22,10 @@ function getSiteUrl(request: Request) {
   }
 
   return new URL(request.url).origin;
+}
+
+function isMockCheckoutEnabled() {
+  return process.env.ALLOW_MOCK_CHECKOUT?.trim() === "true";
 }
 
 function readPayload(payload: unknown): ClaimCheckoutPayload | null {
@@ -66,7 +74,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Das Bild konnte nicht geladen werden." }, { status: 404 });
     }
 
-    const stripe = getStripeServerClient();
     const siteUrl = getSiteUrl(request);
     const order = await createClaimOrder({
       photoId: photo.id,
@@ -80,6 +87,26 @@ export async function POST(request: Request) {
       typeof photo.currency === "string" && photo.currency.trim()
         ? photo.currency.trim().toLowerCase()
         : "eur";
+
+    if (isMockCheckoutEnabled()) {
+      const mockSessionId = `mock_cs_${crypto.randomUUID().replace(/-/g, "")}`;
+      const mockPaymentIntentId = `mock_pi_${crypto.randomUUID().replace(/-/g, "")}`;
+
+      await attachCheckoutSessionToClaimOrder(order.id, mockSessionId);
+      await markClaimOrderPaid({
+        orderId: order.id,
+        sessionId: mockSessionId,
+        paymentIntentId: mockPaymentIntentId,
+        amountCents: amount,
+        currency,
+      });
+
+      return NextResponse.json({
+        url: `${siteUrl}/claim/success?order=${encodeURIComponent(order.id)}&token=${encodeURIComponent(order.access_token)}`,
+      });
+    }
+
+    const stripe = getStripeServerClient();
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
