@@ -3,11 +3,10 @@
 import { useMemo, useState } from "react";
 
 type DemoCheckoutExperienceProps = {
-  orderId: string;
-  token: string;
   photoUrl: string;
   claimCode: string;
   defaultName: string;
+  email: string;
   priceCents: number;
   currency: string;
 };
@@ -46,11 +45,10 @@ function normalizeCvc(value: string) {
 }
 
 export function DemoCheckoutExperience({
-  orderId,
-  token,
   photoUrl,
   claimCode,
   defaultName,
+  email,
   priceCents,
   currency,
 }: DemoCheckoutExperienceProps) {
@@ -78,37 +76,15 @@ export function DemoCheckoutExperience({
       return;
     }
 
-    try {
-      setIsSubmitting(true);
+    setIsSubmitting(true);
 
-      const response = await fetch("/api/claim/demo-pay", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          orderId,
-          token,
-          cardholderName: formState.cardholderName,
-          cardNumber: formState.cardNumber,
-          expiry: formState.expiry,
-          cvc: formState.cvc,
-        }),
-      });
+    const params = new URLSearchParams({
+      code: claimCode,
+      name: formState.cardholderName.trim(),
+      email: email.trim(),
+    });
 
-      const payload = (await response.json()) as { error?: string; url?: string };
-
-      if (!response.ok || !payload.url) {
-        throw new Error(payload.error || "Demo-Zahlung konnte nicht gestartet werden.");
-      }
-
-      window.location.assign(payload.url);
-    } catch (error) {
-      setSubmitError(
-        error instanceof Error ? error.message : "Demo-Zahlung konnte nicht gestartet werden.",
-      );
-      setIsSubmitting(false);
-    }
+    window.location.assign(`/claim/demo-success?${params.toString()}`);
   };
 
   return (

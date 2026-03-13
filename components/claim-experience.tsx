@@ -27,6 +27,16 @@ function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+function buildDemoCheckoutUrl(code: string, fullName: string, email: string) {
+  const params = new URLSearchParams({
+    code,
+    name: fullName.trim(),
+    email: email.trim(),
+  });
+
+  return `/claim/demo-checkout?${params.toString()}`;
+}
+
 export function ClaimExperience({
   photo,
   checkoutMode = "stripe",
@@ -64,6 +74,13 @@ export function ClaimExperience({
     setSubmitError(null);
 
     if (Object.keys(nextErrors).length > 0) {
+      return;
+    }
+
+    if (checkoutMode === "demo") {
+      window.location.assign(
+        buildDemoCheckoutUrl(photo.resolvedClaimCode, formState.fullName, formState.email),
+      );
       return;
     }
 
