@@ -1,6 +1,6 @@
 # LiftPictures QR Screen
 
-Schlanke, produktionsreife Next.js-App mit App Router, TypeScript, Tailwind CSS, Supabase und einem additiven Stripe-Claim-Flow fuer QR-Code-Kaeufe.
+Schlanke, produktionsreife Next.js-App mit App Router, TypeScript, Tailwind CSS, Supabase und einem additiven Claim-Flow fuer QR-Code-Kaeufe.
 
 ## Features
 
@@ -9,7 +9,7 @@ Schlanke, produktionsreife Next.js-App mit App Router, TypeScript, Tailwind CSS,
 - QR-Code pro Bild mit Link auf `/claim?code=...`
 - Mobile Claim-Landingpage mit Blur-Preview
 - Name-/E-Mail-Erfassung vor dem Checkout
-- Additiver Stripe-Test-Checkout ohne bestehende andere Projekte umzubauen
+- Additiver Checkout-Flow mit optionalem Stripe oder Demo-Zahlungsmaske
 - Success-Seite mit Download und Teilen
 
 ## Schnellstart
@@ -75,7 +75,7 @@ Wenn du den Flow sofort testen willst, kannst du in einer Testumgebung vorueberg
 ALLOW_MOCK_CHECKOUT=true
 ```
 
-Dann wird nach Name/E-Mail kein echter Stripe-Checkout geoeffnet, sondern die Bestellung direkt als bezahlt markiert und die Success-Seite mit Download/Teilen freigeschaltet. Das ist nur fuer schnelle interne Tests gedacht und sollte vor einem echten Livegang wieder auf `false` stehen.
+Dann wird nach Name/E-Mail keine Stripe-Seite geoeffnet, sondern eine eigene Demo-Zahlungsmaske mit Kartenfeldern. Beliebige Kartendaten funktionieren, es wird nichts belastet und nach Klick auf `Kaufen` wird das Bild freigeschaltet. Das ist nur fuer schnelle interne Tests gedacht und sollte vor einem echten Livegang wieder auf `false` stehen.
 
 ## Projektstruktur
 

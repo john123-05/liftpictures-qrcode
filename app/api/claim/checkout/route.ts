@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import {
   createClaimOrder,
   attachCheckoutSessionToClaimOrder,
-  markClaimOrderPaid,
 } from "@/lib/claim-orders";
+import { isMockCheckoutEnabled } from "@/lib/checkout-mode";
 import { getClaimPhotoById } from "@/lib/claim";
 import { getStripeServerClient } from "@/lib/stripe";
 import type { ClaimCheckoutPayload } from "@/types/claim";
@@ -22,10 +22,6 @@ function getSiteUrl(request: Request) {
   }
 
   return new URL(request.url).origin;
-}
-
-function isMockCheckoutEnabled() {
-  return process.env.ALLOW_MOCK_CHECKOUT?.trim() === "true";
 }
 
 function readPayload(payload: unknown): ClaimCheckoutPayload | null {
@@ -89,20 +85,13 @@ export async function POST(request: Request) {
         : "eur";
 
     if (isMockCheckoutEnabled()) {
-      const mockSessionId = `mock_cs_${crypto.randomUUID().replace(/-/g, "")}`;
-      const mockPaymentIntentId = `mock_pi_${crypto.randomUUID().replace(/-/g, "")}`;
-
-      await attachCheckoutSessionToClaimOrder(order.id, mockSessionId);
-      await markClaimOrderPaid({
-        orderId: order.id,
-        sessionId: mockSessionId,
-        paymentIntentId: mockPaymentIntentId,
-        amountCents: amount,
-        currency,
-      });
+      await attachCheckoutSessionToClaimOrder(
+        order.id,
+        `mock_pending_${crypto.randomUUID().replace(/-/g, "")}`,
+      );
 
       return NextResponse.json({
-        url: `${siteUrl}/claim/success?order=${encodeURIComponent(order.id)}&token=${encodeURIComponent(order.access_token)}`,
+        url: `${siteUrl}/claim/demo-checkout?order=${encodeURIComponent(order.id)}&token=${encodeURIComponent(order.access_token)}`,
       });
     }
 

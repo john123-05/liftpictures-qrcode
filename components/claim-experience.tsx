@@ -5,6 +5,7 @@ import type { GalleryPhoto } from "@/types/photo";
 
 type ClaimExperienceProps = {
   photo: GalleryPhoto;
+  checkoutMode?: "stripe" | "demo";
 };
 
 type FormState = {
@@ -26,7 +27,10 @@ function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-export function ClaimExperience({ photo }: ClaimExperienceProps) {
+export function ClaimExperience({
+  photo,
+  checkoutMode = "stripe",
+}: ClaimExperienceProps) {
   const [showForm, setShowForm] = useState(false);
   const [isClientReady, setIsClientReady] = useState(false);
   const [formState, setFormState] = useState<FormState>({
@@ -142,8 +146,9 @@ export function ClaimExperience({ photo }: ClaimExperienceProps) {
           </div>
 
           <p className="mt-4 text-sm leading-7 text-ink-soft">
-            Oeffne dein Bild auf dem Handy, gib kurz deinen Namen und deine E-Mail an und wechsle
-            danach direkt in den sicheren Stripe-Checkout.
+            {checkoutMode === "demo"
+              ? "Oeffne dein Bild auf dem Handy, gib kurz deinen Namen und deine E-Mail an und gehe danach direkt in die Demo-Zahlungsmaske."
+              : "Oeffne dein Bild auf dem Handy, gib kurz deinen Namen und deine E-Mail an und wechsle danach direkt in den sicheren Checkout."}
           </p>
 
           {!showForm ? (
@@ -228,12 +233,15 @@ export function ClaimExperience({ photo }: ClaimExperienceProps) {
                   ? "Checkout wird geladen..."
                   : isSubmitting
                     ? "Checkout wird vorbereitet..."
-                    : "Weiter zum Checkout"}
+                    : checkoutMode === "demo"
+                      ? "Weiter zur Demo-Zahlung"
+                      : "Weiter zum Checkout"}
               </button>
 
               <p className="text-xs leading-6 text-ink-soft">
-                Der Checkout laeuft additiv ueber eine eigene Claim-Strecke und veraendert keine
-                bestehende Stripe- oder Supabase-Logik der anderen Projekte.
+                {checkoutMode === "demo"
+                  ? "Demo-Zahlung aktiv. Die Praesentation laeuft additiv ueber die eigene Claim-Strecke und veraendert keine bestehende Stripe- oder Supabase-Logik der anderen Projekte."
+                  : "Der Checkout laeuft additiv ueber eine eigene Claim-Strecke und veraendert keine bestehende Stripe- oder Supabase-Logik der anderen Projekte."}
               </p>
             </div>
           ) : null}

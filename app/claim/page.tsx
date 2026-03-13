@@ -1,5 +1,6 @@
 import { ClaimExperience } from "@/components/claim-experience";
 import { getClaimPhotoByCode } from "@/lib/claim";
+import { isMockCheckoutEnabled } from "@/lib/checkout-mode";
 
 type ClaimPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -81,5 +82,5 @@ export default async function ClaimPage({ searchParams }: ClaimPageProps) {
     );
   }
 
-  return <ClaimExperience photo={photo} />;
+  return <ClaimExperience photo={photo} checkoutMode={isMockCheckoutEnabled() ? "demo" : "stripe"} />;
 }

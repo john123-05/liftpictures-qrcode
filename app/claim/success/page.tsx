@@ -25,8 +25,8 @@ export default async function ClaimSuccessPage({ searchParams }: ClaimSuccessPag
             Keine Freischaltung gefunden.
           </h1>
           <p className="mt-4 text-sm leading-7 text-ink-soft sm:text-base">
-            Oeffne diese Seite ueber den Stripe-Checkout-Redirect, damit dein Kauf geladen werden
-            kann.
+            Oeffne diese Seite ueber den Kauf- oder Demo-Checkout-Redirect, damit dein Kauf
+            geladen werden kann.
           </p>
         </div>
       </main>

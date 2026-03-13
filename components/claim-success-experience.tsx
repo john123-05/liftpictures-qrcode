@@ -142,7 +142,7 @@ export function ClaimSuccessExperience({ orderId, token }: ClaimSuccessExperienc
           <p className="mt-4 text-sm leading-7 text-ink-soft">
             {isPaid
               ? "Du kannst dein Bild jetzt herunterladen oder das Foto direkt mit Freunden teilen."
-              : "Stripe hat die Zahlung abgeschlossen. Wir warten noch kurz auf die Rueckmeldung des Webhooks und schalten dein Bild sofort frei."}
+              : "Die Zahlung wird verarbeitet. Wir schalten dein Bild direkt danach frei."}
           </p>
 
           <div className="mt-6 grid gap-3">
