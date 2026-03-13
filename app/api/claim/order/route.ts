@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { formatClaimOrderApiResponse, getClaimOrderByAccess } from "@/lib/claim-orders";
+import {
+  formatClaimOrderApiResponse,
+  getClaimOrderByAccess,
+  getClaimOrderBySessionId,
+} from "@/lib/claim-orders";
 
 export const runtime = "nodejs";
 
@@ -16,14 +20,17 @@ function getSiteUrl(request: Request) {
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
+    const sessionId = url.searchParams.get("session_id")?.trim();
     const orderId = url.searchParams.get("order")?.trim();
     const token = url.searchParams.get("token")?.trim();
 
-    if (!orderId || !token) {
-      return NextResponse.json({ error: "order oder token fehlt." }, { status: 400 });
+    if (!sessionId && (!orderId || !token)) {
+      return NextResponse.json({ error: "session_id oder order/token fehlt." }, { status: 400 });
     }
 
-    const order = await getClaimOrderByAccess(orderId, token);
+    const order = sessionId
+      ? await getClaimOrderBySessionId(sessionId)
+      : await getClaimOrderByAccess(orderId!, token!);
 
     if (!order) {
       return NextResponse.json({ error: "Keine Claim-Order gefunden." }, { status: 404 });

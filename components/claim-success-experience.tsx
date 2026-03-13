@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ClaimOrderApiResponse } from "@/types/claim";
 
 type ClaimSuccessExperienceProps = {
-  orderId: string;
-  token: string;
+  sessionId?: string;
+  orderId?: string;
+  token?: string;
 };
 
 type LoadState =
@@ -17,26 +18,41 @@ function buildShareText() {
   return "Ich habe gerade mein Bild gesichert.";
 }
 
-export function ClaimSuccessExperience({ orderId, token }: ClaimSuccessExperienceProps) {
+function buildOrderUrl(props: ClaimSuccessExperienceProps) {
+  if (props.sessionId) {
+    return `/api/claim/order?session_id=${encodeURIComponent(props.sessionId)}`;
+  }
+
+  if (props.orderId && props.token) {
+    return `/api/claim/order?order=${encodeURIComponent(props.orderId)}&token=${encodeURIComponent(props.token)}`;
+  }
+
+  return null;
+}
+
+export function ClaimSuccessExperience(props: ClaimSuccessExperienceProps) {
   const [state, setState] = useState<LoadState>({ kind: "loading" });
   const [shareMessage, setShareMessage] = useState<string | null>(null);
 
   const order = state.kind === "ready" ? state.payload : null;
   const isPaid = order?.status === "paid";
+  const orderUrl = buildOrderUrl(props);
+  const shareUrl = order?.shareUrl ?? "";
 
   useEffect(() => {
+    if (!orderUrl) {
+      return;
+    }
+
     let cancelled = false;
 
     const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
     const load = async () => {
       for (let attempt = 0; attempt < 16; attempt += 1) {
-        const response = await fetch(
-          `/api/claim/order?order=${encodeURIComponent(orderId)}&token=${encodeURIComponent(token)}`,
-          {
-            cache: "no-store",
-          },
-        );
+        const response = await fetch(orderUrl, {
+          cache: "no-store",
+        });
 
         const payload = (await response.json()) as
           | ClaimOrderApiResponse
@@ -73,9 +89,24 @@ export function ClaimSuccessExperience({ orderId, token }: ClaimSuccessExperienc
     return () => {
       cancelled = true;
     };
-  }, [orderId, token]);
+  }, [orderUrl]);
 
-  const shareUrl = useMemo(() => order?.shareUrl ?? "", [order?.shareUrl]);
+  if (!orderUrl) {
+    return (
+      <main className="min-h-screen bg-page px-4 py-6 text-ink sm:px-6">
+        <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-md items-center">
+          <div className="w-full border border-line bg-white p-6 sm:p-7">
+            <h1 className="text-2xl font-semibold tracking-[-0.03em] text-ink">
+              Freischaltung konnte nicht geladen werden.
+            </h1>
+            <p className="mt-4 text-sm leading-7 text-ink-soft">
+              Die Success-Seite hat keine gueltigen Parameter erhalten.
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   const handleShare = async () => {
     if (!shareUrl) {

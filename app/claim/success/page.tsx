@@ -1,23 +1,19 @@
+"use client";
+
+import { useSearchParams } from "next/navigation";
 import { ClaimSuccessExperience } from "@/components/claim-success-experience";
 
-type ClaimSuccessPageProps = {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-};
-
-function readSearchParam(value?: string | string[]) {
-  if (Array.isArray(value)) {
-    return value[0] ?? "";
-  }
-
-  return value ?? "";
+function readSearchParam(value: string | null) {
+  return value?.trim() ?? "";
 }
 
-export default async function ClaimSuccessPage({ searchParams }: ClaimSuccessPageProps) {
-  const resolvedSearchParams = (await searchParams) ?? {};
-  const orderId = readSearchParam(resolvedSearchParams.order).trim();
-  const token = readSearchParam(resolvedSearchParams.token).trim();
+export default function ClaimSuccessPage() {
+  const searchParams = useSearchParams();
+  const sessionId = readSearchParam(searchParams.get("session_id"));
+  const orderId = readSearchParam(searchParams.get("order"));
+  const token = readSearchParam(searchParams.get("token"));
 
-  if (!orderId || !token) {
+  if (!sessionId && (!orderId || !token)) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-page px-4 py-8 text-ink sm:px-8">
         <div className="w-full max-w-lg border border-line bg-white p-8 sm:p-10">
@@ -33,5 +29,11 @@ export default async function ClaimSuccessPage({ searchParams }: ClaimSuccessPag
     );
   }
 
-  return <ClaimSuccessExperience orderId={orderId} token={token} />;
+  return (
+    <ClaimSuccessExperience
+      sessionId={sessionId || undefined}
+      orderId={orderId || undefined}
+      token={token || undefined}
+    />
+  );
 }

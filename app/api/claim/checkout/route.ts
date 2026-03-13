@@ -119,7 +119,7 @@ export async function POST(request: Request) {
         photo_id: photo.id,
         claim_code: photo.resolvedClaimCode,
       },
-      success_url: `${siteUrl}/claim/success?order=${encodeURIComponent(order.id)}&token=${encodeURIComponent(order.access_token)}`,
+      success_url: `${siteUrl}/claim/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/claim?code=${encodeURIComponent(photo.resolvedClaimCode)}`,
     });
 
